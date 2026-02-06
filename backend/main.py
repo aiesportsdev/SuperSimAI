@@ -1,11 +1,12 @@
 from fastapi import FastAPI, HTTPException, Body, Header
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from typing import Optional, List
 from bson import ObjectId
 import os
 
-from run_nfl_sim import get_simulation_result
+from run_nfl_sim import get_simulation_result, run_drive
 from database import db, teams
 from schemas import NFLTeamModel, CreateTeamRequest
 
@@ -21,11 +22,79 @@ app.add_middleware(
 )
 
 
-# ============= GAME ENDPOINTS =============
+# ============= DRIVE CHALLENGE ENDPOINTS =============
+
+class DriveRequest(BaseModel):
+    team_id: str
+
+
+@app.post("/drive/start")
+async def start_drive(
+    request: DriveRequest = Body(...),
+    x_wallet_address: Optional[str] = Header(None, alias="x-wallet-address")
+):
+    """Start a Single Drive Challenge with selected team"""
+    
+    # 1. Fetch team from MongoDB
+    team = await teams.find_one({"_id": ObjectId(request.team_id)})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    # 2. Verify ownership
+    if team.get("owner_wallet") and team["owner_wallet"] != x_wallet_address:
+        raise HTTPException(status_code=403, detail="This is not your team")
+    
+    # 3. Run the drive simulation
+    result = run_drive(
+        team_name=team.get("name", "My Team"),
+        strategy_prompt=team.get("strategy_prompt", "Play to win")
+    )
+    
+    # 4. Update team stats in database
+    update_data = {
+        "$inc": {
+            "coach_xp": result["xp_earned"]
+        }
+    }
+    
+    if result["outcome"] == "win":
+        update_data["$inc"]["wins"] = 1
+    else:
+        update_data["$inc"]["losses"] = 1
+    
+    # Calculate new level based on XP
+    current_xp = team.get("coach_xp", 0) + result["xp_earned"]
+    new_level = 1
+    if current_xp >= 2000:
+        new_level = 5
+    elif current_xp >= 1000:
+        new_level = 4
+    elif current_xp >= 500:
+        new_level = 3
+    elif current_xp >= 200:
+        new_level = 2
+    
+    update_data["$set"] = {"coach_level": new_level}
+    
+    await teams.update_one(
+        {"_id": ObjectId(request.team_id)},
+        update_data
+    )
+    
+    # 5. Get updated team data
+    updated_team = await teams.find_one({"_id": ObjectId(request.team_id)})
+    updated_team["_id"] = str(updated_team["_id"])
+    
+    # 6. Return result with team data
+    result["team"] = updated_team
+    return result
+
+
+# ============= LEGACY GAME ENDPOINT =============
 
 @app.post("/nfl/play")
 async def play_nfl_game():
-    """Run a drive simulation with LLM coach"""
+    """Run a drive simulation with LLM coach (legacy)"""
     return get_simulation_result(num_plays=10)
 
 

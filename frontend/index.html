@@ -875,6 +875,152 @@
             font-size: 12px;
             cursor: pointer;
         }
+
+        /* ===== DRIVE CHALLENGE UI ===== */
+        .team-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-gold);
+            border-radius: 8px;
+        }
+
+        .team-select-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            color: var(--secondary-gold);
+            text-transform: uppercase;
+        }
+
+        .team-select {
+            flex: 1;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: var(--text-white);
+            padding: 10px 15px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            border-radius: 6px;
+        }
+
+        .scoreboard {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--primary-orange);
+            border-radius: 8px;
+            padding: 10px 25px;
+            display: none;
+            z-index: 100;
+        }
+
+        .scoreboard.active {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .scoreboard-item {
+            text-align: center;
+        }
+
+        .scoreboard-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            color: var(--primary-orange);
+        }
+
+        .scoreboard-label {
+            font-size: 10px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+        }
+
+        .scoreboard-team {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            color: var(--secondary-gold);
+            border-right: 1px solid #333;
+            padding-right: 20px;
+        }
+
+        /* ===== RESULT MODAL ===== */
+        .result-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .result-modal.active {
+            display: flex;
+        }
+
+        .result-content {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .result-title.win {
+            color: #00ff00;
+        }
+
+        .result-title.lose {
+            color: #ff4444;
+        }
+
+        .result-stats {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .result-stat {
+            text-align: center;
+        }
+
+        .result-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            color: var(--secondary-gold);
+        }
+
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+        }
+
+        .xp-earned {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            color: var(--primary-orange);
+            margin: 20px 0;
+        }
+
+        .result-actions {
+            margin-top: 30px;
+        }
     </style>
 </head>
 
@@ -953,28 +1099,54 @@
 
     <!-- GAME SECTION -->
     <section class="game-section" id="game">
-        <h2 class="section-title">Live Simulation</h2>
+        <h2 class="section-title">Drive Challenge</h2>
         <div class="game-container">
             <div class="game-header">
-                <div class="game-title">🏈 SUPER SIM AI — DRIVE SIMULATOR</div>
+                <div class="game-title">🏈 SUPER SIM AI — DRIVE CHALLENGE</div>
                 <div class="game-status">
                     <div class="status-dot"></div>
-                    <span class="status-text">Ready</span>
+                    <span class="status-text" id="gameStatus">Select Team</span>
                 </div>
+            </div>
+
+            <!-- Team Selector -->
+            <div class="team-selector" id="teamSelector">
+                <span class="team-select-label">Select Your Team:</span>
+                <select id="teamSelect" class="team-select">
+                    <option value="">-- Connect wallet to load teams --</option>
+                </select>
+                <button id="btnStartDrive" class="btn-primary" onclick="startDriveChallenge()" disabled>Start
+                    Drive</button>
             </div>
 
             <div class="canvas-wrapper">
                 <canvas id="nflCanvas" width="800" height="400"></canvas>
                 <div class="zoom-label" id="zoomLabel">CAMERA: TRACKING</div>
+
+                <!-- Scoreboard Overlay -->
+                <div class="scoreboard" id="scoreboard">
+                    <div class="scoreboard-team" id="scoreboardTeam">TEAM</div>
+                    <div class="scoreboard-item">
+                        <div class="scoreboard-value" id="scoreboardDown">1ST</div>
+                        <div class="scoreboard-label">Down</div>
+                    </div>
+                    <div class="scoreboard-item">
+                        <div class="scoreboard-value" id="scoreboardToGo">10</div>
+                        <div class="scoreboard-label">To Go</div>
+                    </div>
+                    <div class="scoreboard-item">
+                        <div class="scoreboard-value" id="scoreboardYard">25</div>
+                        <div class="scoreboard-label">Yard Line</div>
+                    </div>
+                </div>
             </div>
 
             <div class="game-controls">
                 <div class="coach-info">
                     <span class="coach-label">Coach AI:</span>
-                    <span class="coach-name">LLAMA 3.2</span>
+                    <span class="coach-name" id="coachName">LLAMA 3.2</span>
                 </div>
                 <div class="control-buttons">
-                    <button id="btnPlay" class="game-btn game-btn-primary" onclick="playGame()">▶ PLAY DRIVE</button>
                     <button id="btnReplay" class="game-btn" onclick="replayGame()" disabled>↻ REPLAY</button>
                     <button id="btnCamera" class="game-btn" onclick="toggleCamera()">📷 TOGGLE CAM</button>
                 </div>
@@ -982,11 +1154,37 @@
 
             <div class="log-box" id="gameLog">
                 > SYSTEM INITIALIZED.
-                > SUPER SIM AI v1.0 READY.
-                > WAITING FOR COACH INSTRUCTION...
+                > SUPER SIM AI v2.0 READY.
+                > SELECT YOUR TEAM TO BEGIN...
             </div>
         </div>
     </section>
+
+    <!-- RESULT MODAL -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-content">
+            <div class="result-icon" id="resultIcon">🏈</div>
+            <h2 class="result-title" id="resultTitle">DRIVE COMPLETE</h2>
+            <div class="result-stats" id="resultStats">
+                <div class="result-stat">
+                    <div class="result-stat-value" id="statPlays">0</div>
+                    <div class="result-stat-label">Plays</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="statYards">0</div>
+                    <div class="result-stat-label">Yards</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="statFirstDowns">0</div>
+                    <div class="result-stat-label">1st Downs</div>
+                </div>
+            </div>
+            <div class="xp-earned" id="xpEarned">+0 XP</div>
+            <div class="result-actions">
+                <button class="btn-primary" onclick="closeResultModal()">Play Again</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MY TEAMS SECTION -->
     <section class="my-teams-section" id="my-teams">
@@ -1443,7 +1641,9 @@
 
         function onWalletConnected() {
             document.getElementById('createTeamBtn').style.display = 'block';
-            loadMyTeams();
+            loadMyTeams().then(() => {
+                populateTeamDropdown();
+            });
         }
 
         async function checkWalletConnection() {
@@ -1579,7 +1779,150 @@
         // Auto-check wallet on load
         window.addEventListener('load', () => {
             checkWalletConnection();
+
+            // Team select change handler
+            document.getElementById('teamSelect').addEventListener('change', (e) => {
+                selectedTeamId = e.target.value;
+                document.getElementById('btnStartDrive').disabled = !selectedTeamId;
+                if (selectedTeamId) {
+                    document.getElementById('gameStatus').textContent = 'Ready';
+                } else {
+                    document.getElementById('gameStatus').textContent = 'Select Team';
+                }
+            });
         });
+
+        // ==========================================
+        // DRIVE CHALLENGE
+        // ==========================================
+        let selectedTeamId = null;
+        let driveResult = null;
+
+        function populateTeamDropdown() {
+            const select = document.getElementById('teamSelect');
+
+            if (myTeams.length === 0) {
+                select.innerHTML = '<option value="">-- Create a team first --</option>';
+                return;
+            }
+
+            select.innerHTML = '<option value="">-- Select your team --</option>';
+            myTeams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team._id;
+                option.textContent = `${team.name} (Lv.${team.coach_level || 1})`;
+                select.appendChild(option);
+            });
+        }
+
+        async function startDriveChallenge() {
+            if (!selectedTeamId || !connectedWallet) {
+                alert('Please select a team first!');
+                return;
+            }
+
+            // Find selected team for display
+            const selectedTeam = myTeams.find(t => t._id === selectedTeamId);
+
+            // Update UI
+            document.getElementById('btnStartDrive').disabled = true;
+            document.getElementById('gameStatus').textContent = 'Connecting to Coach...';
+            document.getElementById('scoreboardTeam').textContent = selectedTeam?.name || 'TEAM';
+            document.getElementById('scoreboard').classList.add('active');
+
+            // Clear log
+            const logBox = document.getElementById('gameLog');
+            logBox.innerHTML = '> DRIVE CHALLENGE STARTING...\n> Loading ' + (selectedTeam?.name || 'team') + '...\n';
+
+            try {
+                log('Calling LLM Coach...', 'action');
+
+                const res = await fetch(`${API_URL}/drive/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-wallet-address': connectedWallet
+                    },
+                    body: JSON.stringify({ team_id: selectedTeamId })
+                });
+
+                const data = await res.json();
+                driveResult = data;
+
+                if (data.frames && data.logs) {
+                    frames = data.frames;
+                    logs = data.logs;
+
+                    log("Coach ready! Starting drive...", "action");
+                    log("--- PLAY-BY-PLAY ---", "action");
+
+                    await showLogsProgressively(logs);
+
+                    log("", "");
+                    log(`Playing simulation (${frames.length} frames)...`, "action");
+
+                    isPlaying = true;
+                    currentFrame = 0;
+                    document.getElementById('btnReplay').disabled = false;
+
+                    // Wait for animation to finish before showing result
+                    setTimeout(() => {
+                        showResultModal(data);
+                    }, frames.length * (FRAME_DELAY * 16) + 1000);
+                }
+
+                // Update team list with new XP
+                if (data.team) {
+                    const idx = myTeams.findIndex(t => t._id === data.team._id);
+                    if (idx >= 0) {
+                        myTeams[idx] = data.team;
+                        renderTeams();
+                        populateTeamDropdown();
+                    }
+                }
+
+            } catch (e) {
+                log("Error: " + e.message, "action");
+                console.error('Drive failed:', e);
+            }
+
+            document.getElementById('btnStartDrive').disabled = false;
+            document.getElementById('gameStatus').textContent = 'Complete';
+        }
+
+        function updateScoreboard(gameState) {
+            if (!gameState) return;
+
+            const downs = ['1ST', '2ND', '3RD', '4TH'];
+            document.getElementById('scoreboardDown').textContent = downs[gameState.down - 1] || '1ST';
+            document.getElementById('scoreboardToGo').textContent = gameState.to_go || 10;
+            document.getElementById('scoreboardYard').textContent = gameState.yard_line || 25;
+        }
+
+        function showResultModal(data) {
+            const modal = document.getElementById('resultModal');
+            const isWin = data.outcome === 'win';
+
+            document.getElementById('resultIcon').textContent = isWin ? '🎉' : '❌';
+            document.getElementById('resultTitle').textContent = isWin ? 'TOUCHDOWN!' : 'DRIVE FAILED';
+            document.getElementById('resultTitle').className = 'result-title ' + (isWin ? 'win' : 'lose');
+
+            document.getElementById('statPlays').textContent = data.stats?.plays || 0;
+            document.getElementById('statYards').textContent = data.stats?.total_yards || 0;
+            document.getElementById('statFirstDowns').textContent = data.stats?.first_downs || 0;
+            document.getElementById('xpEarned').textContent = '+' + (data.xp_earned || 0) + ' XP';
+
+            modal.classList.add('active');
+            document.getElementById('scoreboard').classList.remove('active');
+        }
+
+        function closeResultModal() {
+            document.getElementById('resultModal').classList.remove('active');
+            document.getElementById('gameStatus').textContent = 'Select Team';
+            selectedTeamId = null;
+            document.getElementById('teamSelect').value = '';
+            document.getElementById('btnStartDrive').disabled = true;
+        }
 
         requestAnimationFrame(draw);
     </script>
