@@ -1137,9 +1137,21 @@
 
             if (frames.length > 0 && currentFrame < frames.length) {
                 const frame = frames[currentFrame];
+
+                // Draw ball trail (arc visualization)
+                if (frame.ball_trail && frame.ball_trail.length > 1) {
+                    drawBallTrail(frame.ball_trail, frame.ball_in_flight);
+                }
+
+                // Draw players
                 frame.left_team.forEach(pos => drawSprite(pos[0], pos[1], ANIM_ROWS.RIGHT));
                 frame.right_team.forEach(pos => drawSprite(pos[0], pos[1], ANIM_ROWS.LEFT));
+
+                // Draw ball with shadow
                 const b = frame.ball;
+                if (b[2] > 0.02) {
+                    drawBallShadow(b[0], b[1]);
+                }
                 drawBall(b[0], b[1], b[2]);
 
                 if (isPlaying) {
@@ -1243,6 +1255,64 @@
             }
 
             ctx.restore();
+        }
+
+        function drawBallShadow(gx, gy) {
+            const ZOOM = getZoom();
+            const x = mapX(gx);
+            const y = mapY(gy) + 10;  // Shadow below ball position
+
+            ctx.beginPath();
+            ctx.ellipse(x, y, 8 * ZOOM, 3 * ZOOM, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fill();
+        }
+
+        function drawBallTrail(trail, inFlight) {
+            if (trail.length < 2) return;
+
+            const ZOOM = getZoom();
+
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i < trail.length; i++) {
+                const p = trail[i];
+                const x = mapX(p[0]);
+                const y = mapY(p[1]) - (p[2] * 40 * ZOOM);
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            // Orange trail for in-flight, fading for completed
+            if (inFlight) {
+                ctx.strokeStyle = 'rgba(255, 165, 0, 0.8)';
+                ctx.shadowColor = '#ff6b35';
+                ctx.shadowBlur = 10;
+            } else {
+                ctx.strokeStyle = 'rgba(255, 165, 0, 0.3)';
+                ctx.shadowBlur = 0;
+            }
+
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Draw dots along the arc
+            for (let i = 0; i < trail.length; i += 2) {
+                const p = trail[i];
+                const x = mapX(p[0]);
+                const y = mapY(p[1]) - (p[2] * 40 * ZOOM);
+                const alpha = (i / trail.length) * 0.5 + 0.2;
+
+                ctx.beginPath();
+                ctx.arc(x, y, 2 * ZOOM, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 200, 100, ${alpha})`;
+                ctx.fill();
+            }
         }
 
         function mapX(val) {
