@@ -1171,11 +1171,11 @@
             <div class="logo-text">SUPER SIM <span>AI</span></div>
         </div>
         <ul class="nav-links">
-            <li><a href="#game">Game</a></li>
-            <li><a href="#how-it-works">Gameplay</a></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#game">Game</a></li>
             <li><a href="#my-teams">My Teams</a></li>
-            <li><a href="tournaments.html">🏆 Tournaments</a></li>
-            <li><a href="#community">Community</a></li>
+            <li><a href="#" class="active">🏆 Tournaments</a></li>
+            <li><a href="index.html#community">Community</a></li>
         </ul>
         <div class="wallet-section">
             <button id="walletBtn" class="btn-wallet" onclick="connectWallet()">
@@ -1185,146 +1185,7 @@
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
-    <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="hero-gradient"></div>
-        <img src="assets/football_hero.png" alt="Football" class="hero-football">
-        <div class="hero-content">
-            <h1 class="hero-title">Deploy AI. Win The Game.</h1>
-            <p class="hero-subtitle">
-                The tactical NFL simulation where you draft, deploy, and prompt AI agents — not players.
-            </p>
-            <div class="hero-buttons">
-                <button class="btn-secondary" onclick="scrollToGame()">Try Demo</button>
-                <button class="btn-primary" onclick="playGame()">Deploy Now</button>
-            </div>
-        </div>
-    </section>
-
-    <div class="section-divider"></div>
-
-    <!-- HOW IT WORKS -->
-    <section class="how-it-works" id="how-it-works">
-        <h2 class="section-title">How It Works</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <img src="assets/agent_card.png" alt="Create Your Team" class="feature-icon">
-                <h3 class="feature-title">Create Your Team</h3>
-                <p class="feature-desc">
-                    Build a roster of autonomous AI agents. Train them in drills, then qualify for <strong>Cash Prize
-                        Tournaments</strong> where strategy is your only weapon.
-                </p>
-            </div>
-            <div class="feature-card">
-                <img src="assets/command_center.png" alt="Prompt Strategies" class="feature-icon">
-                <h3 class="feature-title">Prompt Strategies</h3>
-                <p class="feature-desc">
-                    Guide your agents with LLM-style play-calling prompts. Set offensive and defensive strategies in
-                    natural language.
-                </p>
-            </div>
-            <div class="feature-card">
-                <img src="assets/hero_stadium_bg.png" alt="Watch + Adapt" class="feature-icon">
-                <h3 class="feature-title">Watch + Adapt</h3>
-                <p class="feature-desc">
-                    Watch the live commentary and physics-based simulation. Analyze telemetry data and adapt your
-                    strategy in real-time.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <div class="section-divider"></div>
-
-    <!-- GAME SECTION -->
-    <section class="game-section" id="game">
-        <h2 class="section-title">Drive Challenge</h2>
-        <div class="game-container">
-            <div class="game-header">
-                <div class="game-title">🏈 SUPER SIM AI — DRIVE CHALLENGE</div>
-                <div class="game-status">
-                    <div class="status-dot"></div>
-                    <span class="status-text" id="gameStatus">Select Team</span>
-                </div>
-            </div>
-
-            <!-- Team Selector -->
-            <div class="team-selector" id="teamSelector">
-                <span class="team-select-label">Select Your Team:</span>
-                <select id="teamSelect" class="team-select">
-                    <option value="">-- Connect wallet to load teams --</option>
-                </select>
-                <button id="btnStartDrive" class="btn-primary" onclick="startDriveChallenge()" disabled>Start
-                    Drive</button>
-            </div>
-
-            <div class="canvas-wrapper">
-                <canvas id="nflCanvas" width="800" height="400"></canvas>
-                <div class="zoom-label" id="zoomLabel">CAMERA: TRACKING</div>
-
-                <!-- Scoreboard Overlay -->
-                <div class="scoreboard" id="scoreboard">
-                    <div class="scoreboard-team" id="scoreboardTeam">TEAM</div>
-                    <div class="scoreboard-item">
-                        <div class="scoreboard-value" id="scoreboardDown">1ST</div>
-                        <div class="scoreboard-label">Down</div>
-                    </div>
-                    <div class="scoreboard-item">
-                        <div class="scoreboard-value" id="scoreboardToGo">10</div>
-                        <div class="scoreboard-label">To Go</div>
-                    </div>
-                    <div class="scoreboard-item">
-                        <div class="scoreboard-value" id="scoreboardYard">25</div>
-                        <div class="scoreboard-label">Yard Line</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-controls">
-                <div class="coach-info">
-                    <span class="coach-label">Coach AI:</span>
-                    <span class="coach-name" id="coachName">LLAMA 3.2</span>
-                </div>
-                <div class="control-buttons">
-                    <button id="btnReplay" class="game-btn" onclick="replayGame()" disabled>↻ REPLAY</button>
-                    <button id="btnCamera" class="game-btn" onclick="toggleCamera()">📷 TOGGLE CAM</button>
-                </div>
-            </div>
-
-            <div class="log-box" id="gameLog">
-                > SYSTEM INITIALIZED.
-                > SUPER SIM AI v2.0 READY.
-                > SELECT YOUR TEAM TO BEGIN...
-            </div>
-        </div>
-    </section>
-
-    <!-- RESULT MODAL -->
-    <div class="result-modal" id="resultModal">
-        <div class="result-content">
-            <div class="result-icon" id="resultIcon">🏈</div>
-            <h2 class="result-title" id="resultTitle">DRIVE COMPLETE</h2>
-            <div class="result-stats" id="resultStats">
-                <div class="result-stat">
-                    <div class="result-stat-value" id="statPlays">0</div>
-                    <div class="result-stat-label">Plays</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-stat-value" id="statYards">0</div>
-                    <div class="result-stat-label">Yards</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-stat-value" id="statFirstDowns">0</div>
-                    <div class="result-stat-label">1st Downs</div>
-                </div>
-            </div>
-            <div class="xp-earned" id="xpEarned">+0 XP</div>
-            <div class="result-actions">
-                <button class="btn-primary" onclick="closeResultModal()">Play Again</button>
-            </div>
-        </div>
-    </div>
+    <div class="header-spacer" style="height: 100px;"></div>
 
     <!-- MY TEAMS SECTION -->
     <section class="my-teams-section" id="my-teams">
@@ -1342,20 +1203,71 @@
 
     <div class="section-divider"></div>
 
+    <!-- TOURNAMENTS SECTION -->
+    <section class="tournaments-section" id="tournaments">
+        <div class="tournaments-header">
+            <h2 class="section-title">🏆 Tournaments</h2>
+            <p class="section-subtitle">Level 5+ coaches compete in AI vs AI battles</p>
 
+            <div
+                style="max-width: 800px; margin: 30px auto; text-align: center; color: var(--text-gray); line-height: 1.6;">
+                <p style="margin-bottom: 15px;">
+                    Welcome to the <strong>Super Sim Arena</strong>. This is where legends are forged.
+                </p>
+                <p>
+                    Tournaments operate on a <strong>Double Elimination Bracket</strong> system. If you lose once, you
+                    fight for survival in the lower bracket. Lose twice, and you're out.
+                    Monitor your AI's performance, adapt your strategy prompts between matches, and climb the
+                    leaderboard.
+                    Strategy is your only weapon here.
+                </p>
+            </div>
+        </div>
+
+        <div class="tournaments-container">
+            <!-- Level Gate Warning -->
+            <div id="tournamentLevelGate" class="tournament-gate">
+                <div class="gate-icon">🔒</div>
+                <h3>Level 5 Required</h3>
+                <p>Keep playing drills to level up your coach!</p>
+                <div class="level-progress">
+                    <span id="currentLevelDisplay">Level 1</span>
+                    <div class="progress-bar">
+                        <div id="levelProgressBar" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <span>Level 5</span>
+                </div>
+            </div>
+
+            <!-- Tournament Lobby (shown when Level 5+) -->
+            <div id="tournamentLobby" style="display: none;">
+                <div class="tournament-actions">
+                    <button class="btn-primary" onclick="createTournament()">+ Create Tournament</button>
+                    <button class="btn-secondary" onclick="refreshTournaments()">🔄 Refresh</button>
+                </div>
+
+                <div class="open-tournaments">
+                    <h3>Open Tournaments</h3>
+                    <div id="tournamentsList" class="tournaments-list">
+                        <p class="no-tournaments">No open tournaments. Create one!</p>
+                    </div>
+                </div>
+
+                <div class="my-tournament-results">
+                    <h3>Recent Results</h3>
+                    <div id="tournamentResults" class="results-list">
+                        <p class="no-results">Play in a tournament to see results here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <div class="section-divider"></div>
 
 
 
-    <!-- CTA SECTION -->
-    <section class="cta-section">
-        <div class="cta-bg"></div>
-        <div class="cta-content">
-            <h2 class="cta-title">Deploy Agents. Win Matches.</h2>
-            <button class="btn-primary" onclick="playGame()">Deploy Now</button>
-        </div>
-    </section>
+
 
     <!-- FOOTER -->
     <footer class="footer">
@@ -1398,386 +1310,35 @@
         </div>
     </div>
 
-    <!-- GAME SCRIPT -->
     <script>
-        const canvas = document.getElementById('nflCanvas');
-        const ctx = canvas.getContext('2d');
-        ctx.imageSmoothingEnabled = false;
         const API_URL = "";
         const API_BASE = API_URL; // Used by tournament functions
 
-        // Assets
-        const SPRITE_SHEET = new Image();
-        SPRITE_SHEET.src = "assets/nfl_sprites.png";
-
-        // Sprite Config
-        const SPRITE_SOURCE_SIZE = 256;
-        const SPRITE_RENDER_SIZE = 48;
-
-        const ANIM_ROWS = {
-            DOWN: 0,
-            UP: 1,
-            LEFT: 2,
-            RIGHT: 3
-        };
-
         // State
-        let frames = [];
-        let logs = [];
-        let currentFrame = 0;
-        let isPlaying = false;
-        let frameTimer = 0;
-        const FRAME_DELAY = 3;
-
-        // --- CAMERA ---
-        let cameraX = 0;
-        let cameraMode = 'tracking';
-        const ZOOM_TRACKING = 2.5;
-        const ZOOM_FULL = 1.0;
-
-        function getZoom() {
-            return cameraMode === 'tracking' ? ZOOM_TRACKING : ZOOM_FULL;
-        }
-
-        function toggleCamera() {
-            cameraMode = cameraMode === 'tracking' ? 'full' : 'tracking';
-            document.getElementById('zoomLabel').textContent =
-                cameraMode === 'tracking' ? 'CAMERA: TRACKING' : 'CAMERA: FULL PITCH';
-            if (cameraMode === 'full') {
-                cameraX = 0;
-            }
-        }
-
-        function scrollToGame() {
-            document.getElementById('game').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function draw() {
-            const ZOOM = getZoom();
-
-            if (cameraMode === 'tracking' && frames.length > 0 && currentFrame < frames.length) {
-                const ball = frames[currentFrame].ball;
-                cameraX += (ball[0] - cameraX) * 0.08;
-                const edge = 1.0 - (1.0 / ZOOM);
-                if (cameraX > edge) cameraX = edge;
-                if (cameraX < -edge) cameraX = -edge;
-            } else if (cameraMode === 'full') {
-                cameraX = 0;
-            }
-
-            drawGridiron();
-
-            if (frames.length > 0 && currentFrame < frames.length) {
-                const frame = frames[currentFrame];
-
-                // Draw ball trail (arc visualization)
-                if (frame.ball_trail && frame.ball_trail.length > 1) {
-                    drawBallTrail(frame.ball_trail, frame.ball_in_flight);
-                }
-
-                // Draw players
-                frame.left_team.forEach(pos => drawSprite(pos[0], pos[1], ANIM_ROWS.RIGHT));
-                frame.right_team.forEach(pos => drawSprite(pos[0], pos[1], ANIM_ROWS.LEFT));
-
-                // Draw ball with shadow
-                const b = frame.ball;
-                if (b[2] > 0.02) {
-                    drawBallShadow(b[0], b[1]);
-                }
-                drawBall(b[0], b[1], b[2]);
-
-                if (isPlaying) {
-                    frameTimer++;
-                    if (frameTimer >= FRAME_DELAY) {
-                        currentFrame++;
-                        frameTimer = 0;
-                        if (currentFrame >= frames.length) {
-                            isPlaying = false;
-                            log("Drive Complete. Press REPLAY to watch again.", "action");
-                        }
-                    }
-                }
-            }
-            requestAnimationFrame(draw);
-        }
-
-        function drawGridiron() {
-            ctx.fillStyle = '#2d6a36';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
-            ctx.lineWidth = 2;
-
-            for (let i = -6; i <= 6; i++) {
-                let worldX = i * 0.16;
-                let screenX = mapX(worldX);
-                if (screenX > -10 && screenX < canvas.width + 10) {
-                    ctx.beginPath();
-                    ctx.moveTo(screenX, 0);
-                    ctx.lineTo(screenX, canvas.height);
-                    ctx.stroke();
-                }
-            }
-
-            let leftEZ = mapX(-0.8);
-            if (leftEZ > 0) {
-                ctx.fillStyle = "rgba(0, 0, 100, 0.3)";
-                ctx.fillRect(0, 0, leftEZ, canvas.height);
-            }
-            let rightEZ = mapX(0.8);
-            if (rightEZ < canvas.width) {
-                ctx.fillStyle = "rgba(100, 0, 0, 0.3)";
-                ctx.fillRect(rightEZ, 0, canvas.width - rightEZ, canvas.height);
-            }
-        }
-
-        function drawSprite(gx, gy, row) {
-            const ZOOM = getZoom();
-            const x = mapX(gx);
-            const y = mapY(gy);
-            if (x < -50 || x > canvas.width + 50) return;
-
-            let animFrame = Math.floor(Date.now() / 200) % 4;
-            const size = SPRITE_RENDER_SIZE * (ZOOM * 0.5);
-
-            ctx.drawImage(
-                SPRITE_SHEET,
-                animFrame * SPRITE_SOURCE_SIZE, row * SPRITE_SOURCE_SIZE,
-                SPRITE_SOURCE_SIZE, SPRITE_SOURCE_SIZE,
-                x - size / 2, y - size / 2,
-                size, size
-            );
-        }
-
-        function drawBall(gx, gy, gz) {
-            const ZOOM = getZoom();
-            const x = mapX(gx);
-            const y = mapY(gy) - (gz * 40 * ZOOM);
-
-            const ballWidth = 6 * ZOOM;
-            const ballHeight = 3 * ZOOM;
-
-            ctx.save();
-            ctx.translate(x, y);
-
-            if (gz > 0.05) {
-                ctx.rotate(Math.PI * 0.15);
-            }
-
-            ctx.beginPath();
-            ctx.ellipse(0, 0, ballWidth, ballHeight, 0, 0, Math.PI * 2);
-            ctx.fillStyle = '#8B4513';
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(-ballWidth * 0.5, 0);
-            ctx.lineTo(ballWidth * 0.5, 0);
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            for (let i = -2; i <= 2; i++) {
-                ctx.beginPath();
-                ctx.moveTo(i * ballWidth * 0.2, -ballHeight * 0.3);
-                ctx.lineTo(i * ballWidth * 0.2, ballHeight * 0.3);
-                ctx.stroke();
-            }
-
-            ctx.restore();
-        }
-
-        function drawBallShadow(gx, gy) {
-            const ZOOM = getZoom();
-            const x = mapX(gx);
-            const y = mapY(gy) + 10;  // Shadow below ball position
-
-            ctx.beginPath();
-            ctx.ellipse(x, y, 8 * ZOOM, 3 * ZOOM, 0, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            ctx.fill();
-        }
-
-        function drawBallTrail(trail, inFlight) {
-            if (trail.length < 2) return;
-
-            const ZOOM = getZoom();
-
-            ctx.beginPath();
-            ctx.lineWidth = 2;
-
-            for (let i = 0; i < trail.length; i++) {
-                const p = trail[i];
-                const x = mapX(p[0]);
-                const y = mapY(p[1]) - (p[2] * 40 * ZOOM);
-
-                if (i === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            }
-
-            // Orange trail for in-flight, fading for completed
-            if (inFlight) {
-                ctx.strokeStyle = 'rgba(255, 165, 0, 0.8)';
-                ctx.shadowColor = '#ff6b35';
-                ctx.shadowBlur = 10;
-            } else {
-                ctx.strokeStyle = 'rgba(255, 165, 0, 0.3)';
-                ctx.shadowBlur = 0;
-            }
-
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-
-            // Draw dots along the arc
-            for (let i = 0; i < trail.length; i += 2) {
-                const p = trail[i];
-                const x = mapX(p[0]);
-                const y = mapY(p[1]) - (p[2] * 40 * ZOOM);
-                const alpha = (i / trail.length) * 0.5 + 0.2;
-
-                ctx.beginPath();
-                ctx.arc(x, y, 2 * ZOOM, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 200, 100, ${alpha})`;
-                ctx.fill();
-            }
-        }
-
-        function mapX(val) {
-            const ZOOM = getZoom();
-            let relX = val - cameraX;
-            let normX = (relX * ZOOM + 1.0) / 2.0;
-            return normX * canvas.width;
-        }
-
-        function mapY(val) {
-            const ZOOM = getZoom();
-            return (val * ZOOM * 0.5) * canvas.height + (canvas.height / 2);
-        }
-
-        // --- GAME CONTROL ---
-
-        async function playGame() {
-            document.getElementById('btnPlay').disabled = true;
-            document.getElementById('btnReplay').disabled = true;
-            document.getElementById('gameLog').innerHTML = "";
-
-            log("Connecting to Coach AI...", "thinking");
-            isPlaying = false;
-            currentFrame = 0;
-            frameTimer = 0;
-
-            try {
-                log("Sending game state to LLAMA 3.2...", "thinking");
-                log("Waiting for play call decision...", "thinking");
-
-                const res = await fetch(`${API_URL}/nfl/play`, { method: 'POST' });
-                const data = await res.json();
-
-                if (data.frames && data.logs) {
-                    frames = data.frames;
-                    logs = data.logs;
-
-                    log("Coach response received!", "action");
-                    log("--- PLAY-BY-PLAY ---", "action");
-
-                    await showLogsProgressively(logs);
-
-                    log("", "");
-                    log(`Starting simulation (${frames.length} frames)...`, "action");
-
-                    isPlaying = true;
-                    document.getElementById('btnReplay').disabled = false;
-                }
-            } catch (e) {
-                log("Error: " + e.message, "action");
-            }
-
-            document.getElementById('btnPlay').disabled = false;
-        }
-
-        async function showLogsProgressively(logList) {
-            for (let i = 0; i < logList.length; i++) {
-                const msg = logList[i];
-                if (msg.includes("🧠") || msg.includes("Coach")) {
-                    log(msg, "thinking");
-                } else {
-                    log(msg, "");
-                }
-                await new Promise(r => setTimeout(r, 300));
-            }
-        }
-
-        function replayGame() {
-            if (frames.length === 0) return;
-
-            log("--- REPLAYING ---", "action");
-            currentFrame = 0;
-            frameTimer = 0;
-            if (cameraMode === 'tracking' && frames.length > 0) {
-                cameraX = frames[0].ball[0];
-            }
-            isPlaying = true;
-        }
-
-        function log(msg, type) {
-            const box = document.getElementById('gameLog');
-            const line = document.createElement('div');
-            if (type === "thinking") line.className = "thinking";
-            if (type === "action") line.className = "action";
-            line.textContent = `> ${msg}`;
-            box.appendChild(line);
-            box.scrollTop = box.scrollHeight;
-        }
-
-        // ==========================================
-        // WALLET & TEAM MANAGEMENT
-        // ==========================================
         let connectedWallet = null;
         let myTeams = [];
 
+        // ==========================================
+        // WALLET
+        // ==========================================
         async function connectWallet() {
             try {
                 if (!window.solana || !window.solana.isPhantom) {
                     console.log('⚠️ Phantom not found. Using MOCK WALLET for Demo.');
                     connectedWallet = '8xMOCK_WALLET_SUPERSIM_' + Date.now();
-
-                    document.getElementById('walletBtn').innerHTML = '✅ ' + connectedWallet.slice(0, 4) + '...' + connectedWallet.slice(-4);
-                    document.getElementById('walletBtn').classList.add('connected');
-
-                    localStorage.setItem('supersim_wallet_connected', 'mock');
+                } else {
+                    const response = await window.solana.connect();
+                    connectedWallet = response.publicKey.toString();
+                    localStorage.setItem('supersim_wallet_connected', 'true');
                     localStorage.setItem('supersim_wallet_address', connectedWallet);
-
-                    onWalletConnected();
-                    return connectedWallet;
                 }
-
-                const response = await window.solana.connect();
-                connectedWallet = response.publicKey.toString();
-
-                localStorage.setItem('supersim_wallet_connected', 'true');
-                localStorage.setItem('supersim_wallet_address', connectedWallet);
 
                 document.getElementById('walletBtn').innerHTML = '✅ ' + connectedWallet.slice(0, 4) + '...' + connectedWallet.slice(-4);
                 document.getElementById('walletBtn').classList.add('connected');
-
                 onWalletConnected();
-                return connectedWallet;
             } catch (err) {
                 console.error('Wallet connection failed:', err);
-                return null;
             }
-        }
-
-        function onWalletConnected() {
-            document.getElementById('createTeamBtn').style.display = 'block';
-            loadMyTeams().then(() => {
-                populateTeamDropdown();
-            });
         }
 
         async function checkWalletConnection() {
@@ -1806,9 +1367,18 @@
             }
         }
 
+        async function onWalletConnected() {
+            document.getElementById('noTeamsMsg').style.display = 'none';
+            document.getElementById('createTeamBtn').style.display = 'block';
+            await loadMyTeams();
+            checkTournamentAccess();
+        }
+
+        // ==========================================
+        // TEAMS
+        // ==========================================
         async function loadMyTeams() {
             if (!connectedWallet) return;
-
             try {
                 const res = await fetch(`${API_URL}/teams/mine`, {
                     headers: { 'x-wallet-address': connectedWallet }
@@ -1822,7 +1392,6 @@
 
         function renderTeams() {
             const container = document.getElementById('teamsContainer');
-
             if (myTeams.length === 0) {
                 container.innerHTML = `
                     <div class="no-teams-msg">
@@ -1832,7 +1401,7 @@
                 `;
                 return;
             }
-
+            // Simple list for this page
             container.innerHTML = `
                 <div class="team-cards-grid">
                     ${myTeams.map(t => `
@@ -1843,20 +1412,6 @@
                             </div>
                             <div class="team-coach">🧠 Coach: ${t.coach_name}</div>
                             <div class="team-strategy">"${(t.strategy_prompt || '').substring(0, 60)}..."</div>
-                            <div class="team-stats">
-                                <div class="team-stat">
-                                    <div class="team-stat-value">${t.wins || 0}</div>
-                                    <div class="team-stat-label">Wins</div>
-                                </div>
-                                <div class="team-stat">
-                                    <div class="team-stat-value">${t.losses || 0}</div>
-                                    <div class="team-stat-label">Losses</div>
-                                </div>
-                                <div class="team-stat">
-                                    <div class="team-stat-value">${t.coach_xp || 0}</div>
-                                    <div class="team-stat-label">XP</div>
-                                </div>
-                            </div>
                         </div>
                     `).join('')}
                 </div>
@@ -1874,193 +1429,126 @@
         async function createTeam() {
             const name = document.getElementById('teamNameInput').value.trim();
             const coachName = document.getElementById('coachNameInput').value.trim() || 'AI Coach';
-            const strategy = document.getElementById('strategyInput').value.trim() || 'Play aggressive, go for big plays.';
+            const strategy = document.getElementById('strategyInput').value.trim() || 'Play aggressive.';
 
-            if (!name) {
-                alert('Please enter a team name!');
-                return;
-            }
+            if (!name) { alert('Enter team name'); return; }
 
             try {
                 const res = await fetch(`${API_URL}/teams`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-wallet-address': connectedWallet
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        coach_name: coachName,
-                        strategy_prompt: strategy
-                    })
+                    headers: { 'Content-Type': 'application/json', 'x-wallet-address': connectedWallet },
+                    body: JSON.stringify({ name, coach_name: coachName, strategy_prompt: strategy })
                 });
-
                 const newTeam = await res.json();
                 myTeams.push(newTeam);
                 renderTeams();
                 closeCreateTeamModal();
-
-                // Clear form
-                document.getElementById('teamNameInput').value = '';
-                document.getElementById('coachNameInput').value = '';
-                document.getElementById('strategyInput').value = '';
+                checkTournamentAccess(); // Re-check access
             } catch (e) {
-                console.error('Failed to create team:', e);
-                alert('Failed to create team. Please try again.');
+                alert('Failed to create team');
             }
         }
 
-        // Auto-check wallet on load
-        window.addEventListener('load', () => {
-            checkWalletConnection();
+        // ==========================================
+        // TOURNAMENTS
+        // ==========================================
+        async function checkTournamentAccess() {
+            if (!myTeams || myTeams.length === 0) {
+                document.getElementById('tournamentLevelGate').style.display = 'block';
+                document.getElementById('tournamentLobby').style.display = 'none';
+                return;
+            }
 
-            // Team select change handler
-            document.getElementById('teamSelect').addEventListener('change', (e) => {
-                selectedTeamId = e.target.value;
-                document.getElementById('btnStartDrive').disabled = !selectedTeamId;
-                if (selectedTeamId) {
-                    document.getElementById('gameStatus').textContent = 'Ready';
-                } else {
-                    document.getElementById('gameStatus').textContent = 'Select Team';
+            const highestLevel = Math.max(...myTeams.map(t => t.coach_level || 1));
+            const levelProgress = Math.min((highestLevel / 5) * 100, 100);
+
+            document.getElementById('currentLevelDisplay').textContent = 'Level ' + highestLevel;
+            document.getElementById('levelProgressBar').style.width = levelProgress + '%';
+
+            if (highestLevel >= 5) {
+                document.getElementById('tournamentLevelGate').style.display = 'none';
+                document.getElementById('tournamentLobby').style.display = 'block';
+                refreshTournaments();
+            } else {
+                document.getElementById('tournamentLevelGate').style.display = 'block';
+                document.getElementById('tournamentLobby').style.display = 'none';
+            }
+        }
+
+        async function refreshTournaments() {
+            try {
+                const res = await fetch(API_BASE + '/tournaments');
+                const tournaments = await res.json();
+                const container = document.getElementById('tournamentsList');
+
+                if (tournaments.length === 0) {
+                    container.innerHTML = '<p class="no-tournaments">No open tournaments. Create one!</p>';
+                    return;
                 }
-            });
-        });
 
-        // ==========================================
-        // DRIVE CHALLENGE
-        // ==========================================
-        let selectedTeamId = null;
-        let driveResult = null;
-
-        function populateTeamDropdown() {
-            const select = document.getElementById('teamSelect');
-
-            if (myTeams.length === 0) {
-                select.innerHTML = '<option value="">-- Create a team first --</option>';
-                return;
+                container.innerHTML = tournaments.map(t => `
+                    <div class="tournament-card">
+                        <div class="tournament-info">
+                            <h4>${t.name}</h4>
+                            <span>${t.participants.length} participants • ${t.status}</span>
+                        </div>
+                        <button onclick="joinTournament('${t.id}')">Join</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Failed to load tournaments:', err);
             }
-
-            select.innerHTML = '<option value="">-- Select your team --</option>';
-            myTeams.forEach(team => {
-                const option = document.createElement('option');
-                option.value = team._id;
-                option.textContent = `${team.name} (Lv.${team.coach_level || 1})`;
-                select.appendChild(option);
-            });
         }
 
-        async function startDriveChallenge() {
-            if (!selectedTeamId || !connectedWallet) {
-                alert('Please select a team first!');
+        async function createTournament() {
+            if (!connectedWallet || myTeams.length === 0) {
+                alert('Connect wallet and create a team first!');
                 return;
             }
-
-            // Find selected team for display
-            const selectedTeam = myTeams.find(t => t._id === selectedTeamId);
-
-            // Update UI
-            document.getElementById('btnStartDrive').disabled = true;
-            document.getElementById('gameStatus').textContent = 'Connecting to Coach...';
-            document.getElementById('scoreboardTeam').textContent = selectedTeam?.name || 'TEAM';
-            document.getElementById('scoreboard').classList.add('active');
-
-            // Clear log
-            const logBox = document.getElementById('gameLog');
-            logBox.innerHTML = '> DRIVE CHALLENGE STARTING...\n> Loading ' + (selectedTeam?.name || 'team') + '...\n';
+            const name = prompt('Tournament Name:', 'Super Sim Championship');
+            if (!name) return;
+            const teamId = myTeams[0]._id;
 
             try {
-                log('Calling LLM Coach...', 'action');
-
-                const res = await fetch(`${API_URL}/drive/start`, {
+                const res = await fetch(API_BASE + '/tournaments/create', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-wallet-address': connectedWallet
-                    },
-                    body: JSON.stringify({ team_id: selectedTeamId })
+                    headers: { 'Content-Type': 'application/json', 'x-wallet-address': connectedWallet },
+                    body: JSON.stringify({ team_id: teamId, name: name })
                 });
-
                 const data = await res.json();
-                driveResult = data;
-
-                if (data.frames && data.logs) {
-                    frames = data.frames;
-                    logs = data.logs;
-
-                    log("Coach ready! Starting drive...", "action");
-                    log("--- PLAY-BY-PLAY ---", "action");
-
-                    await showLogsProgressively(logs);
-
-                    log("", "");
-                    log(`Playing simulation (${frames.length} frames)...`, "action");
-
-                    isPlaying = true;
-                    currentFrame = 0;
-                    document.getElementById('btnReplay').disabled = false;
-
-                    // Wait for animation to finish before showing result
-                    setTimeout(() => {
-                        showResultModal(data);
-                    }, frames.length * (FRAME_DELAY * 16) + 1000);
+                if (res.ok) {
+                    alert('🏆 Tournament created!');
+                    refreshTournaments();
+                } else {
+                    alert(data.detail || 'Failed');
                 }
-
-                // Update team list with new XP
-                if (data.team) {
-                    const idx = myTeams.findIndex(t => t._id === data.team._id);
-                    if (idx >= 0) {
-                        myTeams[idx] = data.team;
-                        renderTeams();
-                        populateTeamDropdown();
-                    }
-                }
-
-            } catch (e) {
-                log("Error: " + e.message, "action");
-                console.error('Drive failed:', e);
+            } catch (err) {
+                alert('Error creating tournament');
             }
-
-            document.getElementById('btnStartDrive').disabled = false;
-            document.getElementById('gameStatus').textContent = 'Complete';
         }
 
-        function updateScoreboard(gameState) {
-            if (!gameState) return;
-
-            const downs = ['1ST', '2ND', '3RD', '4TH'];
-            document.getElementById('scoreboardDown').textContent = downs[gameState.down - 1] || '1ST';
-            document.getElementById('scoreboardToGo').textContent = gameState.to_go || 10;
-            document.getElementById('scoreboardYard').textContent = gameState.yard_line || 25;
+        async function joinTournament(tournamentId) {
+            if (!connectedWallet || myTeams.length === 0) return;
+            const teamId = myTeams[0]._id;
+            try {
+                const res = await fetch(API_BASE + '/tournaments/' + tournamentId + '/join', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-wallet-address': connectedWallet },
+                    body: JSON.stringify({ team_id: teamId })
+                });
+                if (res.ok) {
+                    alert('✅ Joined tournament!');
+                    refreshTournaments();
+                } else {
+                    alert('Failed to join');
+                }
+            } catch (err) {
+                alert('Error joining');
+            }
         }
 
-        function showResultModal(data) {
-            const modal = document.getElementById('resultModal');
-            const isWin = data.outcome === 'win';
-
-            document.getElementById('resultIcon').textContent = isWin ? '🎉' : '❌';
-            document.getElementById('resultTitle').textContent = isWin ? 'TOUCHDOWN!' : 'DRIVE FAILED';
-            document.getElementById('resultTitle').className = 'result-title ' + (isWin ? 'win' : 'lose');
-
-            document.getElementById('statPlays').textContent = data.stats?.plays || 0;
-            document.getElementById('statYards').textContent = data.stats?.total_yards || 0;
-            document.getElementById('statFirstDowns').textContent = data.stats?.first_downs || 0;
-            document.getElementById('xpEarned').textContent = '+' + (data.xp_earned || 0) + ' XP';
-
-            modal.classList.add('active');
-            document.getElementById('scoreboard').classList.remove('active');
-        }
-
-        function closeResultModal() {
-            document.getElementById('resultModal').classList.remove('active');
-            document.getElementById('gameStatus').textContent = 'Select Team';
-            selectedTeamId = null;
-            document.getElementById('teamSelect').value = '';
-            document.getElementById('btnStartDrive').disabled = true;
-        }
-
-
-
-        requestAnimationFrame(draw);
+        // Init
+        window.addEventListener('load', checkWalletConnection);
     </script>
 </body>
 
