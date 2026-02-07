@@ -1991,16 +1991,38 @@
             logBox.innerHTML = '> DRIVE CHALLENGE STARTING...\n> Loading ' + (selectedTeam?.name || 'team') + '...\n';
 
             try {
-                log('Calling LLM Coach...', 'action');
+                log('Calling OpenClaw Agent... (Simulating full drive, ~30-50s)', 'action');
 
-                const res = await fetch(`${API_URL}/drive/start`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-wallet-address': connectedWallet
-                    },
-                    body: JSON.stringify({ team_id: selectedTeamId })
-                });
+                const loadingMessages = [
+                    "Analyzing defensive schemes...",
+                    "Consulting the playbook...",
+                    "Reviewing game tape...",
+                    "Checking wind conditions...",
+                    "Argue with the referee...",
+                    "Drawing up a trick play...",
+                    "Hydrating...",
+                    "Sizing up the opponent..."
+                ];
+
+                let msgIndex = 0;
+                const loadingInterval = setInterval(() => {
+                    log("> " + loadingMessages[msgIndex % loadingMessages.length], "thinking");
+                    msgIndex++;
+                }, 3500);
+
+                let res;
+                try {
+                    res = await fetch(`${API_URL}/drive/start`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-wallet-address': connectedWallet
+                        },
+                        body: JSON.stringify({ team_id: selectedTeamId })
+                    });
+                } finally {
+                    clearInterval(loadingInterval);
+                }
 
                 const data = await res.json();
 
