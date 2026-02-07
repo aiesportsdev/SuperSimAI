@@ -20,8 +20,6 @@ services:
   - type: web
     name: supersim-game
     runtime: static
-    region: oregon
-    plan: free
     buildCommand: echo "No build needed"
     staticPublishPath: frontend
     headers:
@@ -37,8 +35,6 @@ services:
   - type: web
     name: supersim-docs
     runtime: static
-    region: oregon
-    plan: free
     rootDir: docs
     buildCommand: npm install && npm run build
     staticPublishPath: build
