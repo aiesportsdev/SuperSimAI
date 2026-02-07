@@ -96,12 +96,11 @@ class NFLPhysicsWorld:
         self.add_player(2, (x_start + 10.0, -20), 'CB2')
         self.add_player(2, (x_start + 15.0, 0), 'S')
         
-        # Initialize ball at QB
-        self.ball_carrier = 'QB'
-        qb = self.offense['QB']
-        self.ball_x = qb.position.x
-        self.ball_y = qb.position.y
-        self.ball_z = 0.8  # Waist height (held)
+        # Initialize ball at Center (Line of Scrimmage)
+        self.ball_carrier = None # Snapping
+        self.ball_x = x_start
+        self.ball_y = 0
+        self.ball_z = 0.1  # On ground
         self.ball_in_flight = False
 
     def throw_ball(self, target_role='WR1', throw_power=1.0):
@@ -198,73 +197,95 @@ class NFLPhysicsWorld:
     def run_play(self, play_type, steps=100):
         dt = 0.02  # 50 Hz
         
-        for i in range(steps):
-            progress = i / float(steps)
+        SNAP_STEPS = 15
+        
+        # Center position (LoS)
+        center_x = self.offense['OL2'].position.x # OL2 is middle (Center)
+        center_y = self.offense['OL2'].position.y
+        
+        target_carrier = 'QB' if play_type == 'PASS' else 'RB'
+        target_body = self.offense[target_carrier]
+        
+        for i in range(steps + SNAP_STEPS):
+            # SNAP PHASE
+            if i < SNAP_STEPS:
+                t = i / float(SNAP_STEPS)
+                # Interpolate ball from Center to Target
+                self.ball_x = center_x + (target_body.position.x - center_x) * t
+                self.ball_y = center_y + (target_body.position.y - center_y) * t
+                self.ball_z = 0.1 + (0.8 - 0.1) * t # Lift to waist
+                
+                # Players hold position (could add stance jitter here)
+                pass
             
-            if play_type == 'RUN':
-                # RB rushes forward
-                rb = self.offense['RB']
-                rb.apply_force_at_local_point((40000, 0))
+            # PLAY PHASE
+            else:
+                play_step = i - SNAP_STEPS
+                progress = play_step / float(steps)
                 
-                # Ball stays with RB
-                self.ball_x = rb.position.x
-                self.ball_y = rb.position.y
-                self.ball_z = 0.8
-                self.ball_carrier = 'RB'
-                
-                # Defense pursues RB
-                for role, body in self.defense.items():
-                    target = rb.position
-                    diff = target - body.position
-                    if diff.length > 0:
-                        force = diff.normalized() * 30000
-                        body.apply_force_at_local_point(force)
-            
-            elif play_type == 'PASS':
-                qb = self.offense['QB']
-                
-                # QB dropback (first 30%)
-                if progress < 0.3:
-                    qb.apply_force_at_local_point((-10000, 0))
-                    self.ball_x = qb.position.x
-                    self.ball_y = qb.position.y
+                if play_type == 'RUN':
+                    # RB rushes forward
+                    rb = self.offense['RB']
+                    rb.apply_force_at_local_point((40000, 0))
+                    
+                    # Ball stays with RB
+                    self.ball_x = rb.position.x
+                    self.ball_y = rb.position.y
                     self.ball_z = 0.8
-                    self.ball_carrier = 'QB'
+                    self.ball_carrier = 'RB'
+                    
+                    # Defense pursues RB
+                    for role, body in self.defense.items():
+                        target = rb.position
+                        diff = target - body.position
+                        if diff.length > 0:
+                            force = diff.normalized() * 30000
+                            body.apply_force_at_local_point(force)
                 
-                # Throw at 30%
-                elif progress >= 0.3 and not self.ball_in_flight and self.ball_carrier == 'QB':
-                    self.throw_ball('WR1', throw_power=1.0)
+                elif play_type == 'PASS':
+                    qb = self.offense['QB']
+                    
+                    # QB dropback (first 30%)
+                    if progress < 0.3:
+                        qb.apply_force_at_local_point((-10000, 0))
+                        self.ball_x = qb.position.x
+                        self.ball_y = qb.position.y
+                        self.ball_z = 0.8
+                        self.ball_carrier = 'QB'
+                    
+                    # Throw at 30%
+                    elif progress >= 0.3 and not self.ball_in_flight and self.ball_carrier == 'QB':
+                        self.throw_ball('WR1', throw_power=1.0)
+                    
+                    # WRs run routes
+                    for role in ['WR1', 'WR2']:
+                        self.offense[role].apply_force_at_local_point((30000, 0))
+                    
+                    # Defenders cover
+                    cb1 = self.defense['CB1']
+                    wr1 = self.offense['WR1']
+                    diff = wr1.position - cb1.position
+                    if diff.length > 0:
+                        cb1.apply_force_at_local_point(diff.normalized() * 25000)
                 
-                # WRs run routes
-                for role in ['WR1', 'WR2']:
-                    self.offense[role].apply_force_at_local_point((30000, 0))
+                # Update ball physics (only if in flight)
+                self.update_ball_physics(dt)
                 
-                # Defenders cover
-                cb1 = self.defense['CB1']
-                wr1 = self.offense['WR1']
-                diff = wr1.position - cb1.position
-                if diff.length > 0:
-                    cb1.apply_force_at_local_point(diff.normalized() * 25000)
-            
-            # Update ball physics
-            self.update_ball_physics(dt)
-            
-            # If receiver caught it, they run
-            if self.ball_carrier in ['WR1', 'WR2'] and self.pass_result == 'complete':
-                receiver = self.offense[self.ball_carrier]
-                receiver.apply_force_at_local_point((35000, 0))
-                self.ball_x = receiver.position.x
-                self.ball_y = receiver.position.y
-                self.ball_z = 0.8
-            
-            self.space.step(dt)
+                # If receiver caught it, they run
+                if self.ball_carrier in ['WR1', 'WR2'] and self.pass_result == 'complete':
+                    receiver = self.offense[self.ball_carrier]
+                    receiver.apply_force_at_local_point((35000, 0))
+                    self.ball_x = receiver.position.x
+                    self.ball_y = receiver.position.y
+                    self.ball_z = 0.8
             
             # Clamp players to field boundaries
             for body in list(self.offense.values()) + list(self.defense.values()):
                 x = max(0, min(self.FIELD_WIDTH, body.position.x))
                 y = max(-self.FIELD_HEIGHT / 2, min(self.FIELD_HEIGHT / 2, body.position.y))
                 body.position = pymunk.Vec2d(x, y)
-            
+
+            self.space.step(dt)
             self.record_frame()
 
     def record_frame(self):
