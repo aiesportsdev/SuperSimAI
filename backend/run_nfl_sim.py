@@ -41,7 +41,7 @@ def call_nfl_agent(game_state, strategy_prompt="Win the game"):
             "model": "llama3.2:1b", 
             "prompt": prompt,
             "stream": False
-        }, timeout=2.0) # Short timeout for gameplay
+        }, timeout=float(os.getenv("OLLAMA_TIMEOUT", "5.0")))
         
         if response.status_code == 200:
             result = response.json().get("response", "")
