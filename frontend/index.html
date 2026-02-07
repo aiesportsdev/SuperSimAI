@@ -490,6 +490,167 @@
             color: var(--primary-orange);
         }
 
+        /* ===== TOURNAMENTS SECTION ===== */
+        .tournaments-section {
+            padding: 80px 50px;
+            background: linear-gradient(180deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+        }
+
+        .tournaments-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-subtitle {
+            color: var(--text-gray);
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .tournaments-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .tournament-gate {
+            background: var(--card-bg);
+            border: 2px solid var(--border-gold);
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .gate-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .tournament-gate h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            color: var(--secondary-gold);
+            margin-bottom: 10px;
+        }
+
+        .tournament-gate p {
+            color: var(--text-gray);
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .level-progress {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .level-progress span {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 12px;
+            background: #333;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-orange), var(--secondary-gold));
+            transition: width 0.5s ease;
+        }
+
+        .tournament-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: transparent;
+            border: 2px solid var(--text-gray);
+            color: var(--text-white);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+
+        .open-tournaments,
+        .my-tournament-results {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .open-tournaments h3,
+        .my-tournament-results h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--secondary-gold);
+        }
+
+        .tournaments-list,
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tournament-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #222;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .tournament-card:hover {
+            border-color: var(--primary-orange);
+        }
+
+        .tournament-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .tournament-info span {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .tournament-card button {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, var(--primary-orange), var(--secondary-gold));
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .no-tournaments,
+        .no-results {
+            color: var(--text-gray);
+            text-align: center;
+            padding: 20px;
+        }
+
         /* ===== PARTNERS ===== */
         .partners {
             padding: 60px 50px;
@@ -1035,6 +1196,7 @@
             <li><a href="#game">Game</a></li>
             <li><a href="#how-it-works">Gameplay</a></li>
             <li><a href="#my-teams">My Teams</a></li>
+            <li><a href="#tournaments">🏆 Tournaments</a></li>
             <li><a href="#community">Community</a></li>
         </ul>
         <div class="wallet-section">
@@ -1196,6 +1358,54 @@
         <div id="teamsContainer">
             <div class="no-teams-msg" id="noTeamsMsg">
                 <p>🔌 Connect your wallet to see your teams</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- TOURNAMENTS SECTION -->
+    <section class="tournaments-section" id="tournaments">
+        <div class="tournaments-header">
+            <h2 class="section-title">🏆 Tournaments</h2>
+            <p class="section-subtitle">Level 5+ coaches compete in AI vs AI battles</p>
+        </div>
+
+        <div class="tournaments-container">
+            <!-- Level Gate Warning -->
+            <div id="tournamentLevelGate" class="tournament-gate">
+                <div class="gate-icon">🔒</div>
+                <h3>Level 5 Required</h3>
+                <p>Keep playing drills to level up your coach!</p>
+                <div class="level-progress">
+                    <span id="currentLevelDisplay">Level 1</span>
+                    <div class="progress-bar">
+                        <div id="levelProgressBar" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <span>Level 5</span>
+                </div>
+            </div>
+
+            <!-- Tournament Lobby (shown when Level 5+) -->
+            <div id="tournamentLobby" style="display: none;">
+                <div class="tournament-actions">
+                    <button class="btn-primary" onclick="createTournament()">+ Create Tournament</button>
+                    <button class="btn-secondary" onclick="refreshTournaments()">🔄 Refresh</button>
+                </div>
+
+                <div class="open-tournaments">
+                    <h3>Open Tournaments</h3>
+                    <div id="tournamentsList" class="tournaments-list">
+                        <p class="no-tournaments">No open tournaments. Create one!</p>
+                    </div>
+                </div>
+
+                <div class="my-tournament-results">
+                    <h3>Recent Results</h3>
+                    <div id="tournamentResults" class="results-list">
+                        <p class="no-results">Play in a tournament to see results here.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1922,6 +2132,134 @@
             selectedTeamId = null;
             document.getElementById('teamSelect').value = '';
             document.getElementById('btnStartDrive').disabled = true;
+        }
+
+        // ==========================================
+        // TOURNAMENTS
+        // ==========================================
+
+        async function checkTournamentAccess() {
+            // Check if user has a Level 5+ team
+            if (!myTeams || myTeams.length === 0) {
+                document.getElementById('tournamentLevelGate').style.display = 'block';
+                document.getElementById('tournamentLobby').style.display = 'none';
+                return;
+            }
+
+            const highestLevel = Math.max(...myTeams.map(t => t.coach_level || 1));
+            const levelProgress = Math.min((highestLevel / 5) * 100, 100);
+
+            document.getElementById('currentLevelDisplay').textContent = 'Level ' + highestLevel;
+            document.getElementById('levelProgressBar').style.width = levelProgress + '%';
+
+            if (highestLevel >= 5) {
+                document.getElementById('tournamentLevelGate').style.display = 'none';
+                document.getElementById('tournamentLobby').style.display = 'block';
+                refreshTournaments();
+            } else {
+                document.getElementById('tournamentLevelGate').style.display = 'block';
+                document.getElementById('tournamentLobby').style.display = 'none';
+            }
+        }
+
+        async function refreshTournaments() {
+            try {
+                const res = await fetch(API_BASE + '/tournaments');
+                const tournaments = await res.json();
+
+                const container = document.getElementById('tournamentsList');
+
+                if (tournaments.length === 0) {
+                    container.innerHTML = '<p class="no-tournaments">No open tournaments. Create one!</p>';
+                    return;
+                }
+
+                container.innerHTML = tournaments.map(t => `
+                    <div class="tournament-card">
+                        <div class="tournament-info">
+                            <h4>${t.name}</h4>
+                            <span>${t.participants.length} participants • ${t.status}</span>
+                        </div>
+                        <button onclick="joinTournament('${t.id}')">Join</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Failed to load tournaments:', err);
+            }
+        }
+
+        async function createTournament() {
+            if (!connectedWallet || myTeams.length === 0) {
+                alert('Connect wallet and create a team first!');
+                return;
+            }
+
+            const name = prompt('Tournament Name:', 'Super Sim Championship');
+            if (!name) return;
+
+            const teamId = myTeams[0]._id; // Use first team
+
+            try {
+                const res = await fetch(API_BASE + '/tournaments/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-wallet-address': connectedWallet
+                    },
+                    body: JSON.stringify({ team_id: teamId, name: name })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('🏆 Tournament created! ID: ' + data.tournament.id);
+                    refreshTournaments();
+                } else {
+                    alert(data.detail || 'Failed to create tournament');
+                }
+            } catch (err) {
+                console.error('Create tournament error:', err);
+                alert('Error creating tournament');
+            }
+        }
+
+        async function joinTournament(tournamentId) {
+            if (!connectedWallet || myTeams.length === 0) {
+                alert('Connect wallet and create a team first!');
+                return;
+            }
+
+            const teamId = myTeams[0]._id;
+
+            try {
+                const res = await fetch(API_BASE + '/tournaments/' + tournamentId + '/join', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-wallet-address': connectedWallet
+                    },
+                    body: JSON.stringify({ team_id: teamId })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('✅ Joined tournament!');
+                    refreshTournaments();
+                } else {
+                    alert(data.detail || 'Failed to join');
+                }
+            } catch (err) {
+                console.error('Join tournament error:', err);
+                alert('Error joining tournament');
+            }
+        }
+
+        // Check tournament access when teams load
+        const originalOnWalletConnected = onWalletConnected;
+        onWalletConnected = async function () {
+            await originalOnWalletConnected();
+            setTimeout(checkTournamentAccess, 500);
         }
 
         requestAnimationFrame(draw);
