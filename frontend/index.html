@@ -1572,27 +1572,38 @@
             const x = mapX(gx);
             const y = mapY(gy) - (gz * 40 * ZOOM);
 
+            const ballWidth = 6 * ZOOM;
+            const ballHeight = 3 * ZOOM;
+
             ctx.save();
             ctx.translate(x, y);
 
-            // Simple rotation based on X position to simulate spin
-            if (gz > 0.02) {
-                ctx.rotate(gx * 0.5);
-            } else {
-                ctx.rotate(0);
+            if (gz > 0.05) {
+                ctx.rotate(Math.PI * 0.15);
             }
 
-            const size = 24 * ZOOM; // Larger for visibility
+            // Brown football
+            ctx.beginPath();
+            ctx.ellipse(0, 0, ballWidth, ballHeight, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#8B4513';
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.stroke();
 
-            if (BALL_IMG.complete && BALL_IMG.naturalWidth > 0) {
-                // Draw image centered - square aspect for this image
-                ctx.drawImage(BALL_IMG, -size / 2, -size / 2, size, size);
-            } else {
-                // Fallback
-                ctx.fillStyle = '#DAA520'; // Goldenrod
+            // Laces
+            ctx.beginPath();
+            ctx.moveTo(-ballWidth * 0.5, 0);
+            ctx.lineTo(ballWidth * 0.5, 0);
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            for (let i = -2; i <= 2; i++) {
                 ctx.beginPath();
-                ctx.ellipse(0, 0, 6 * ZOOM, 3 * ZOOM, 0, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.moveTo(i * ballWidth * 0.2, -ballHeight * 0.3);
+                ctx.lineTo(i * ballWidth * 0.2, ballHeight * 0.3);
+                ctx.stroke();
             }
 
             ctx.restore();
