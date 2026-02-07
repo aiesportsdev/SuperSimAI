@@ -6,6 +6,7 @@ from typing import Optional, List
 from bson import ObjectId
 import os
 
+from datetime import datetime, timedelta
 from run_nfl_sim import get_simulation_result, run_drive
 from database import db, teams
 from schemas import NFLTeamModel, CreateTeamRequest
@@ -44,6 +45,17 @@ async def start_drive(
     if team.get("owner_wallet") and team["owner_wallet"] != x_wallet_address:
         raise HTTPException(status_code=403, detail="This is not your team")
     
+    # 2.5 Rate Limit (5 mins)
+    last_played = team.get("last_played_at")
+    if last_played:
+        # Simple check assuming datetime object
+        if (datetime.utcnow() - last_played) < timedelta(minutes=5):
+            remaining = 5 - int((datetime.utcnow() - last_played).total_seconds() / 60)
+            raise HTTPException(
+                status_code=429,
+                detail=f"⏳ Coach is resting! Drills available in {remaining} min."
+            )
+    
     # 3. Run the drive simulation
     result = run_drive(
         team_name=team.get("name", "My Team"),
@@ -74,7 +86,10 @@ async def start_drive(
     elif current_xp >= 200:
         new_level = 2
     
-    update_data["$set"] = {"coach_level": new_level}
+    update_data["$set"] = {
+        "coach_level": new_level,
+        "last_played_at": datetime.utcnow()
+    }
     
     await teams.update_one(
         {"_id": ObjectId(request.team_id)},
@@ -507,6 +522,18 @@ async def create_team(
     x_wallet_address: Optional[str] = Header(None, alias="x-wallet-address")
 ):
     """Create a new team linked to wallet address"""
+    
+    # 0. Check Limits (1 Team until Level 5)
+    if x_wallet_address:
+        existing_teams = await teams.find({"owner_wallet": x_wallet_address}).to_list(length=10)
+        if len(existing_teams) >= 1:
+            highest_level = max([t.get("coach_level", 1) for t in existing_teams], default=1)
+            if highest_level < 5:
+                 raise HTTPException(
+                    status_code=403,
+                    detail=f"🔒 Limit Reached! Train your current team to Level 5 before creating another. (Current Max: Lv.{highest_level})"
+                 )
+
     team_dict = {
         "name": team.name,
         "coach_name": team.coach_name,

@@ -1403,8 +1403,14 @@
         const canvas = document.getElementById('nflCanvas');
         const ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
-        const API_URL = "https://supersim-api.onrender.com";
+
+        const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? "http://localhost:8000"
+            : "https://supersim-api.onrender.com";
         const API_BASE = API_URL; // Used by tournament functions
+
+        const BALL_IMG = new Image();
+        BALL_IMG.src = "assets/golden_ball.png";
 
         // Assets
         const SPRITE_SHEET = new Image();
@@ -1554,36 +1560,27 @@
             const x = mapX(gx);
             const y = mapY(gy) - (gz * 40 * ZOOM);
 
-            const ballWidth = 6 * ZOOM;
-            const ballHeight = 3 * ZOOM;
-
             ctx.save();
             ctx.translate(x, y);
 
-            if (gz > 0.05) {
-                ctx.rotate(Math.PI * 0.15);
+            // Simple rotation based on X position to simulate spin
+            if (gz > 0.02) {
+                ctx.rotate(gx * 0.5);
+            } else {
+                ctx.rotate(0);
             }
 
-            ctx.beginPath();
-            ctx.ellipse(0, 0, ballWidth, ballHeight, 0, 0, Math.PI * 2);
-            ctx.fillStyle = '#8B4513';
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1;
-            ctx.stroke();
+            const size = 18 * ZOOM;
 
-            ctx.beginPath();
-            ctx.moveTo(-ballWidth * 0.5, 0);
-            ctx.lineTo(ballWidth * 0.5, 0);
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            for (let i = -2; i <= 2; i++) {
+            if (BALL_IMG.complete && BALL_IMG.naturalWidth > 0) {
+                // Draw image centered
+                ctx.drawImage(BALL_IMG, -size / 2, -size / 3, size, size * 0.65);
+            } else {
+                // Fallback
+                ctx.fillStyle = '#DAA520'; // Goldenrod
                 ctx.beginPath();
-                ctx.moveTo(i * ballWidth * 0.2, -ballHeight * 0.3);
-                ctx.lineTo(i * ballWidth * 0.2, ballHeight * 0.3);
-                ctx.stroke();
+                ctx.ellipse(0, 0, 6 * ZOOM, 3 * ZOOM, 0, 0, Math.PI * 2);
+                ctx.fill();
             }
 
             ctx.restore();
@@ -1857,10 +1854,35 @@
                                     <div class="team-stat-label">XP</div>
                                 </div>
                             </div>
+                            <button onclick="deleteTeam('${t._id}')" class="btn-delete" style="margin-top: 15px; width: 100%; background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444; padding: 8px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: all 0.2s;">DELETE TEAM</button>
                         </div>
                     `).join('')}
                 </div>
             `;
+        }
+
+        async function deleteTeam(teamId) {
+            if (!confirm('Are you sure you want to delete this team? This cannot be undone.')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/teams/${teamId}`, {
+                    method: 'DELETE',
+                    headers: { 'x-wallet-address': connectedWallet }
+                });
+
+                if (res.ok) {
+                    // Update local state
+                    myTeams = myTeams.filter(t => t._id !== teamId);
+                    renderTeams();
+                    populateTeamDropdown(); // Refresh dropdown too
+                } else {
+                    const data = await res.json();
+                    alert(data.detail || 'Failed to delete team');
+                }
+            } catch (e) {
+                console.error('Delete error:', e);
+                alert('Error deleting team');
+            }
         }
 
         function openCreateTeamModal() {
@@ -1981,6 +2003,15 @@
                 });
 
                 const data = await res.json();
+
+                if (!res.ok) {
+                    log("Error: " + (data.detail || "Request failed"), "action");
+                    alert(data.detail || "Request failed");
+                    document.getElementById('btnStartDrive').disabled = false;
+                    document.getElementById('gameStatus').textContent = 'Error';
+                    return;
+                }
+
                 driveResult = data;
 
                 if (data.frames && data.logs) {

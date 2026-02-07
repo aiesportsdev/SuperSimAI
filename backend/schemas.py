@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, Field, BeforeValidator
 from typing import List, Optional
 from typing_extensions import Annotated
@@ -38,6 +39,9 @@ class NFLTeamModel(BaseModel):
     # Visuals
     team_color_primary: str = "#ff6b35"
     team_color_secondary: str = "#ffa500"
+    
+    # Rate Limiting
+    last_played_at: Optional[datetime] = None
 
 
 class CreateTeamRequest(BaseModel):
