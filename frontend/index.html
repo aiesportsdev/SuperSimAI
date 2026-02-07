@@ -1284,7 +1284,7 @@
             <div class="game-controls">
                 <div class="coach-info">
                     <span class="coach-label">Coach AI:</span>
-                    <span class="coach-name" id="coachName">LLAMA 3.2</span>
+                    <span class="coach-name" id="coachName">OpenClaw Agent</span>
                 </div>
                 <div class="control-buttons">
                     <button id="btnReplay" class="game-btn" onclick="replayGame()" disabled>↻ REPLAY</button>
@@ -1672,7 +1672,7 @@
             frameTimer = 0;
 
             try {
-                log("Sending game state to LLAMA 3.2...", "thinking");
+                log("Sending game state to OpenClaw Agent...", "thinking");
                 log("Waiting for play call decision...", "thinking");
 
                 const res = await fetch(`${API_URL}/nfl/play`, { method: 'POST' });
