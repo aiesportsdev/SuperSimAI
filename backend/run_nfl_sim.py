@@ -4,11 +4,23 @@ import sys
 from nfl_sim import NFLGame
 from nfl_physics import NFLPhysicsWorld
 
+import os
+import random
+
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
+LLM_OFFLINE = False
+
 def call_nfl_agent(game_state, strategy_prompt="Win the game"):
     """
-    Calls Ollama to decide the next play.
-    Uses the team's strategy_prompt to influence decisions.
+    Calls Ollama to decide the next play. 
+    Falls back to simple logic if LLM is offline.
     """
+    global LLM_OFFLINE
+    
+    # 1. FAILSAVE MODE
+    if LLM_OFFLINE:
+        return simple_coach_logic(game_state)
+
     prompt = f"""
     You are the Head Coach of an American Football team. 
     Your coaching style: {strategy_prompt}
@@ -25,11 +37,11 @@ def call_nfl_agent(game_state, strategy_prompt="Win the game"):
     """
     
     try:
-        response = requests.post("http://localhost:11434/api/generate", json={
+        response = requests.post(OLLAMA_URL, json={
             "model": "llama3.2:1b", 
             "prompt": prompt,
             "stream": False
-        })
+        }, timeout=2.0) # Short timeout for gameplay
         
         if response.status_code == 200:
             result = response.json().get("response", "")
@@ -47,9 +59,40 @@ def call_nfl_agent(game_state, strategy_prompt="Win the game"):
             if action not in ["RUN", "PASS"]: action = "RUN"
             return action, reason
             
-        return "RUN", "LLM failed (Status)"
     except Exception as e:
-        return "RUN", f"LLM error: {str(e)[:40]}"
+        print(f"LOG:> ⚠️ LLM Connection Failed: {e}. Switching to Offline Coach.")
+        LLM_OFFLINE = True
+        return simple_coach_logic(game_state, reason_prefix="[Offline] ")
+
+    return "RUN", "LLM failed (Status)"
+
+def simple_coach_logic(game_state, reason_prefix=""):
+    """Fallback logic when LLM is down"""
+    import random
+    
+    down = game_state['down']
+    to_go = game_state['to_go']
+    
+    # Simple logic based on situation
+    if down == 4 and to_go > 2:
+        action = "PASS" # Desperate
+        reason = "4th down, need yards."
+    elif to_go < 3:
+        action = "RUN" # Short yardage
+        reason = "Short yardage situation."
+    elif to_go > 10:
+        action = "PASS" # Long yardage
+        reason = "Long way to go, airing it out."
+    else:
+        # Mix it up
+        if random.random() > 0.5:
+            action = "PASS"
+            reason = "Balanced playcalling."
+        else:
+            action = "RUN"
+            reason = "Establishing the run."
+            
+    return action, f"{reason_prefix}{reason}"
 
 
 def run_drive(team_name="Team", strategy_prompt="Play to win"):
