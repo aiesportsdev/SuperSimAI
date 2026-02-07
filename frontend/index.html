@@ -1584,11 +1584,11 @@
                 ctx.rotate(0);
             }
 
-            const size = 18 * ZOOM;
+            const size = 24 * ZOOM; // Larger for visibility
 
             if (BALL_IMG.complete && BALL_IMG.naturalWidth > 0) {
-                // Draw image centered
-                ctx.drawImage(BALL_IMG, -size / 2, -size / 3, size, size * 0.65);
+                // Draw image centered - square aspect for this image
+                ctx.drawImage(BALL_IMG, -size / 2, -size / 2, size, size);
             } else {
                 // Fallback
                 ctx.fillStyle = '#DAA520'; // Goldenrod
