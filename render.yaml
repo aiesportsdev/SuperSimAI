@@ -1,0 +1,48 @@
+# Render Blueprint - Super Sim AI
+# Deploy all services at once: https://render.com/docs/blueprint-spec
+
+services:
+  # Backend API (Python/FastAPI)
+  - type: web
+    name: supersim-api
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URI
+        sync: false  # Set manually in Render dashboard
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+  # Frontend Game UI (Static)
+  - type: web
+    name: supersim-game
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: echo "No build needed"
+    staticPublishPath: frontend
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # Documentation Site (Docusaurus)
+  - type: web
+    name: supersim-docs
+    runtime: static
+    region: oregon
+    plan: free
+    rootDir: docs
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
