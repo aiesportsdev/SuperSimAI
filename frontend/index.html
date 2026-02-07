@@ -1178,8 +1178,8 @@
             <li><a href="#community">Community</a></li>
         </ul>
         <div class="wallet-section">
-            <button id="walletBtn" class="btn-wallet" onclick="connectWallet()">
-                🔌 Connect Wallet
+            <button id="walletBtn" class="btn-wallet" onclick="toggleWalletConnection()">
+                <span class="icon">⚡</span> CONNECT WALLET
             </button>
             <span id="walletAddress" class="wallet-address" style="display: none;"></span>
         </div>
@@ -1760,7 +1760,12 @@
         let connectedWallet = null;
         let myTeams = [];
 
-        async function connectWallet() {
+        async function toggleWalletConnection() {
+            if (connectedWallet) {
+                disconnectWallet();
+                return null;
+            }
+
             try {
                 if (!window.solana || !window.solana.isPhantom) {
                     console.log('⚠️ Phantom not found. Using MOCK WALLET for Demo.');
@@ -1768,6 +1773,7 @@
 
                     document.getElementById('walletBtn').innerHTML = '✅ ' + connectedWallet.slice(0, 4) + '...' + connectedWallet.slice(-4);
                     document.getElementById('walletBtn').classList.add('connected');
+                    document.getElementById('walletBtn').title = "Click to Disconnect";
 
                     localStorage.setItem('supersim_wallet_connected', 'mock');
                     localStorage.setItem('supersim_wallet_address', connectedWallet);
@@ -1784,6 +1790,7 @@
 
                 document.getElementById('walletBtn').innerHTML = '✅ ' + connectedWallet.slice(0, 4) + '...' + connectedWallet.slice(-4);
                 document.getElementById('walletBtn').classList.add('connected');
+                document.getElementById('walletBtn').title = "Click to Disconnect";
 
                 onWalletConnected();
                 return connectedWallet;
@@ -1791,6 +1798,30 @@
                 console.error('Wallet connection failed:', err);
                 return null;
             }
+        }
+
+        function disconnectWallet() {
+            connectedWallet = null;
+            myTeams = []; // Clear teams
+            selectedTeamId = ""; // Clear selection
+
+            localStorage.removeItem('supersim_wallet_connected');
+            localStorage.removeItem('supersim_wallet_address');
+
+            const btn = document.getElementById('walletBtn');
+            btn.innerHTML = '<span class="icon">⚡</span> CONNECT WALLET';
+            btn.classList.remove('connected');
+            btn.title = "";
+
+            document.getElementById('createTeamBtn').style.display = 'none';
+            document.getElementById('teamSelect').innerHTML = '<option value="">-- Connect wallet to load teams --</option>';
+            document.getElementById('gameStatus').textContent = 'Select Team';
+            document.getElementById('btnStartDrive').disabled = true;
+
+            const strategyEditor = document.getElementById('strategyEditor');
+            if (strategyEditor) strategyEditor.style.display = 'none';
+
+            log("Wallet disconnected.", "info");
         }
 
         function onWalletConnected() {
@@ -1808,6 +1839,7 @@
                 connectedWallet = storedAddress;
                 document.getElementById('walletBtn').innerHTML = '✅ ' + connectedWallet.slice(0, 4) + '...' + connectedWallet.slice(-4);
                 document.getElementById('walletBtn').classList.add('connected');
+                document.getElementById('walletBtn').title = "Click to Disconnect";
                 onWalletConnected();
                 return;
             }
@@ -1818,6 +1850,8 @@
                     connectedWallet = response.publicKey.toString();
                     document.getElementById('walletBtn').innerHTML = '✅ ' + connectedWallet.slice(0, 4) + '...' + connectedWallet.slice(-4);
                     document.getElementById('walletBtn').classList.add('connected');
+                    document.getElementById('walletBtn').title = "Click to Disconnect";
+
                     onWalletConnected();
                 } catch (e) {
                     console.warn('Auto-connect failed.');
