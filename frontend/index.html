@@ -1261,6 +1261,20 @@
 
             <div class="canvas-wrapper">
                 <canvas id="nflCanvas" width="800" height="400"></canvas>
+
+                <!-- Cooldown Overlay -->
+                <div id="cooldownOverlay"
+                    style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); flex-direction: column; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(2px);">
+                    <div
+                        style="color: #ff4444; font-size: 1.5rem; font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">
+                        Cooldown Active</div>
+                    <div id="cooldownTimer"
+                        style="color: #fff; font-size: 3.5rem; font-family: 'Orbitron', sans-serif; font-weight: bold; text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);">
+                        05:00</div>
+                    <div
+                        style="color: #888; margin-top: 15px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;">
+                        Coach needs a strategy break</div>
+                </div>
                 <div class="zoom-label" id="zoomLabel">CAMERA: TRACKING</div>
 
                 <!-- Scoreboard Overlay -->
@@ -1939,14 +1953,72 @@
             // Team select change handler
             document.getElementById('teamSelect').addEventListener('change', (e) => {
                 selectedTeamId = e.target.value;
-                document.getElementById('btnStartDrive').disabled = !selectedTeamId;
+
                 if (selectedTeamId) {
                     document.getElementById('gameStatus').textContent = 'Ready';
+                    updateCooldownDisplay();
                 } else {
                     document.getElementById('gameStatus').textContent = 'Select Team';
+                    document.getElementById('btnStartDrive').disabled = true;
+                    if (document.getElementById('cooldownOverlay')) document.getElementById('cooldownOverlay').style.display = 'none';
                 }
             });
+
+            // Start Cooldown Timer Check
+            setInterval(updateCooldownDisplay, 1000);
         });
+
+        function updateCooldownDisplay() {
+            const overlay = document.getElementById('cooldownOverlay');
+            const timer = document.getElementById('cooldownTimer');
+            const btn = document.getElementById('btnStartDrive');
+
+            if (!selectedTeamId || !myTeams || myTeams.length === 0) {
+                if (overlay) overlay.style.display = 'none';
+                return;
+            }
+
+            const team = myTeams.find(t => t._id === selectedTeamId);
+            if (!team || !team.last_played_at) {
+                if (overlay) overlay.style.display = 'none';
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'START DRIVE CHALLENGE';
+                }
+                return;
+            }
+
+            // Parse time safely (handle naive/UTC)
+            let lastPlayedStr = team.last_played_at;
+            if (!lastPlayedStr.endsWith('Z') && !lastPlayedStr.includes('+')) {
+                lastPlayedStr += 'Z'; // Assume UTC if no timezone
+            }
+
+            const lastPlayed = new Date(lastPlayedStr).getTime();
+            const now = new Date().getTime();
+            const cooldownMs = 5 * 60 * 1000;
+            const diff = now - lastPlayed;
+            const remaining = cooldownMs - diff;
+
+            if (remaining > 0) {
+                if (overlay) overlay.style.display = 'flex';
+
+                const m = Math.floor(remaining / 60000);
+                const s = Math.floor((remaining % 60000) / 1000);
+                if (timer) timer.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = `COOLDOWN (${m}:${s.toString().padStart(2, '0')})`;
+                }
+            } else {
+                if (overlay) overlay.style.display = 'none';
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'START DRIVE CHALLENGE';
+                }
+            }
+        }
 
         // ==========================================
         // DRIVE CHALLENGE
