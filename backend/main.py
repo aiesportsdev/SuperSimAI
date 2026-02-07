@@ -27,6 +27,7 @@ app.add_middleware(
 
 class DriveRequest(BaseModel):
     team_id: str
+    strategy_prompt: Optional[str] = None  # Custom strategy for this drive
 
 
 @app.post("/drive/start")
@@ -56,10 +57,11 @@ async def start_drive(
                 detail=f"⏳ Coach is resting! Drills available in {remaining} min."
             )
     
-    # 3. Run the drive simulation
+    # 3. Run the drive simulation (use custom strategy if provided)
+    strategy = request.strategy_prompt if request.strategy_prompt else team.get("strategy_prompt", "Play to win")
     result = run_drive(
         team_name=team.get("name", "My Team"),
-        strategy_prompt=team.get("strategy_prompt", "Play to win")
+        strategy_prompt=strategy
     )
     
     # 4. Update team stats in database
