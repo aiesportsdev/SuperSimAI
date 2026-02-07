@@ -258,6 +258,13 @@ class NFLPhysicsWorld:
                 self.ball_z = 1.5
             
             self.space.step(dt)
+            
+            # Clamp players to field boundaries
+            for body in list(self.offense.values()) + list(self.defense.values()):
+                x = max(0, min(self.FIELD_WIDTH, body.position.x))
+                y = max(-self.FIELD_HEIGHT / 2, min(self.FIELD_HEIGHT / 2, body.position.y))
+                body.position = pymunk.Vec2d(x, y)
+            
             self.record_frame()
 
     def record_frame(self):
