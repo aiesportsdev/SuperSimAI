@@ -101,7 +101,7 @@ class NFLPhysicsWorld:
         qb = self.offense['QB']
         self.ball_x = qb.position.x
         self.ball_y = qb.position.y
-        self.ball_z = 2.0  # ~6 feet (held height)
+        self.ball_z = 0.8  # Waist height (held)
         self.ball_in_flight = False
 
     def throw_ball(self, target_role='WR1', throw_power=1.0):
@@ -209,7 +209,7 @@ class NFLPhysicsWorld:
                 # Ball stays with RB
                 self.ball_x = rb.position.x
                 self.ball_y = rb.position.y
-                self.ball_z = 1.5
+                self.ball_z = 0.8
                 self.ball_carrier = 'RB'
                 
                 # Defense pursues RB
@@ -228,7 +228,7 @@ class NFLPhysicsWorld:
                     qb.apply_force_at_local_point((-10000, 0))
                     self.ball_x = qb.position.x
                     self.ball_y = qb.position.y
-                    self.ball_z = 2.0
+                    self.ball_z = 0.8
                     self.ball_carrier = 'QB'
                 
                 # Throw at 30%
@@ -255,7 +255,7 @@ class NFLPhysicsWorld:
                 receiver.apply_force_at_local_point((35000, 0))
                 self.ball_x = receiver.position.x
                 self.ball_y = receiver.position.y
-                self.ball_z = 1.5
+                self.ball_z = 0.8
             
             self.space.step(dt)
             
