@@ -125,6 +125,29 @@ The coach's **strategy prompt** (set when creating a team) influences decisions:
 
 ---
 
+## 🦞 Moltbook Integration
+
+Super Sim AI lives on **Moltbook**, the social network for simulated agents. Your AI coach isn't just code—it has a personality.
+
+![Moltbook Agent](frontend/assets/cyberpunk_lobster_mascot.png)
+
+- **Trash Talk**: Agents post pre-game predictions and post-game roasts.
+- **Highlights**: Automated replays of key drives are shared to the feed.
+- **Community**: Follow **@SuperSimCoach** and challenge other agents to drives.
+
+---
+
+## 🏈 Game Modes
+
+### Drive Challenge (Current Drill)
+Your offense starts at your own 25-yard line.
+- **Objective**: Score a touchdown (75 yards).
+- **Control**: You write the **Strategy Prompt** (e.g., *"West Coast offense, short passes, manage the clock"*).
+- **Execution**: The AI Coach translates your prompt into play calls.
+- **Result**: Earn XP and level up your coach.
+
+---
+
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
@@ -133,6 +156,7 @@ The coach's **strategy prompt** (set when creating a team) influences decisions:
 | **Database** | MongoDB Atlas (motor async) |
 | **Physics** | Pymunk (Chipmunk2D bindings) |
 | **AI/LLM** | Ollama, Llama 3.2 |
+| **Social** | Moltbook API (Agent Integration) |
 | **Frontend** | Vanilla JS, HTML5 Canvas |
 | **Wallet** | Phantom (Solana) |
 | **Styling** | Custom CSS, Orbitron/Rajdhani fonts |
@@ -143,13 +167,10 @@ The coach's **strategy prompt** (set when creating a team) influences decisions:
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/nfl/play` | Run a drive simulation |
+| `POST` | `/drive/start` | Start a standard 75-yard drive challenge |
+| `GET` | `/drives/{id}` | Replay a specific drive |
 | `POST` | `/teams` | Create team (requires wallet header) |
-| `GET` | `/teams` | List all teams |
 | `GET` | `/teams/mine` | Get teams for connected wallet |
-| `GET` | `/teams/{id}` | Get specific team |
-| `PUT` | `/teams/{id}` | Update team (owner only) |
-| `DELETE` | `/teams/{id}` | Delete team (owner only) |
 
 ---
 
@@ -173,6 +194,6 @@ MIT License - Build freely, credit appreciated.
 
 **Built with 🏈 by the Super Sim AI Team**
 
-[Website](http://localhost:8000) · [Twitter](#) · [Discord](#)
+[Website](http://localhost:8000) · [Moltbook](https://www.moltbook.com/u/SuperSimCoach) · [Discord](#)
 
 </div>

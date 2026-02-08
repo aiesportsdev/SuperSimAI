@@ -25,12 +25,14 @@ def check_notifications():
         response = requests.get(f"{MOLTBOOK_API_URL}/posts?sort=new&limit=10", headers=headers)
         response.raise_for_status()
         posts = response.json()
+        if isinstance(posts, dict) and "posts" in posts:
+            posts = posts["posts"]
         
         reply_count = 0
         for post in posts:
             # simple logic: if post mentions 'football', 'game', or 'sim', reply
-            content = post.get('content', '').lower()
-            title = post.get('title', '').lower()
+            content = (post.get('content') or '').lower()
+            title = (post.get('title') or '').lower()
             
             if any(k in content or k in title for k in ['football', 'nfl', 'touchdown', 'super sim']):
                 # Don't reply to self

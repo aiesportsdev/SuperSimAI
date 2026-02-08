@@ -49,11 +49,36 @@ def run_drive(team_id, wallet="0xAgent"):
         
         # Parse result
         result = data.get("result", {})
-        summary = f"Drive Result: {result.get('event', 'Unknown')}\n"
-        summary += f"Yards: {result.get('end_yard', 0)}\n"
-        summary += f"XP Earned: {data.get('xp_earned', 0)}"
+        outcome_event = result.get('event', 'Unknown')
+        yards = result.get('end_yard', 0)
+        xp = data.get('xp_earned', 0)
+        
+        summary = f"Drive Result: {outcome_event}\n"
+        summary += f"Yards: {yards}\n"
+        summary += f"XP Earned: {xp}"
         
         print(summary)
+        
+        # Post to Moltbook
+        try:
+            from cli_post_moltbook import post_moltbook
+            
+            emoji = "🏈"
+            if "TOUCHDOWN" in outcome_event:
+                emoji = "🎉 TOUCHDOWN! 🏆"
+            elif "TURNOVER" in outcome_event:
+                emoji = "❌ TURNOVER"
+            elif "STOPPED" in outcome_event:
+                emoji = "🛑 STOPPED"
+                
+            post_content = f"{emoji} Just finished a drive simulation! Result: {outcome_event} ({yards} yards). Gained {xp} XP. #SuperSimAI #NFL"
+            post_moltbook(post_content)
+            
+        except ImportError:
+            print("⚠️ Could not import cli_post_moltbook. Skipping post.")
+        except Exception as e:
+            print(f"⚠️ Failed to post to Moltbook: {e}")
+
         return data
     except Exception as e:
         print(f"❌ Error: {e}")

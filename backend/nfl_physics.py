@@ -105,8 +105,11 @@ class NFLPhysicsWorld:
         
         # Initialize ball at Center (Line of Scrimmage)
         self.ball_carrier = None # Snapping
-        self.ball_x = x_start
-        self.ball_y = 0
+        
+        # Center is OL2
+        center = self.offense['OL2']
+        self.ball_x = center.position.x
+        self.ball_y = center.position.y
         self.ball_z = 0.1  # On ground
         self.ball_in_flight = False
 

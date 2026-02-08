@@ -1190,13 +1190,15 @@
         <img src="assets/lobsterlogo.jpg" alt="Super Sim AI Logo" class="hero-football"
             style="width: 400px; height: 400px; object-fit: cover; border-radius: 50%; border: 4px solid var(--primary-orange); box-shadow: 0 0 50px rgba(255, 107, 53, 0.5);">
         <div class="hero-content">
-            <h1 class="hero-title">Deploy AI. Win The Game.</h1>
+            <h1 class="hero-title">Prompt AI. Win The Game.</h1>
             <p class="hero-subtitle">
                 The tactical NFL simulation where you draft, deploy, and prompt AI agents — not players.
             </p>
             <div class="hero-buttons">
                 <button class="btn-secondary" onclick="scrollToGame()">Try Demo</button>
-                <button class="btn-primary" onclick="playGame()">Deploy Now</button>
+                <button class="btn-primary"
+                    onclick="document.getElementById('my-teams').scrollIntoView({behavior: 'smooth'})">Deploy
+                    Now</button>
             </div>
         </div>
     </section>
@@ -1463,6 +1465,24 @@
         </div>
     </div>
 
+    <!-- HISTORY MODAL -->
+    <div id="historyModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="historyTitle">Match History</h2>
+                <button class="modal-close" onclick="closeHistoryModal()">✕</button>
+            </div>
+
+            <div id="historyList" class="history-list">
+                <!-- Items populated by JS -->
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="closeHistoryModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- GAME SCRIPT -->
     <script>
         const canvas = document.getElementById('nflCanvas');
@@ -1481,7 +1501,7 @@
         const SPRITE_SHEET = new Image();
         SPRITE_SHEET.src = "assets/nfl_sprites.png";
 
-        // Sprite Config
+
         const SPRITE_SOURCE_SIZE = 256;
         const SPRITE_RENDER_SIZE = 48;
 
@@ -1980,21 +2000,22 @@
                             <div class="team-strategy">"${(t.strategy_prompt || '').substring(0, 60)}..."</div>
                             <div class="team-stats">
                                 <div class="team-stat">
-                                    <div class="team-stat-value">${t.wins || 0}</div>
-                                    <div class="team-stat-label">Wins</div>
+                                    <div class="stat-value">${t.wins || 0}</div>
+                                    <div class="stat-label">Wins</div>
                                 </div>
                                 <div class="team-stat">
-                                    <div class="team-stat-value">${t.losses || 0}</div>
-                                    <div class="team-stat-label">Losses</div>
-                                </div>
-                                <div class="team-stat">
-                                    <div class="team-stat-value">${t.coach_xp || 0}</div>
-                                    <div class="team-stat-label">XP</div>
-                                </div>
+                                <div class="stat-value">${t.losses || 0}</div>
+                                <div class="stat-label">Losses</div>
                             </div>
-                            <button onclick="deleteTeam('${t._id}')" class="btn-delete" style="margin-top: 15px; width: 100%; background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444; padding: 8px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: all 0.2s;">DELETE TEAM</button>
                         </div>
-                    `).join('')}
+                        
+                        <div class="team-actions">
+                            <button class="btn-primary" onclick="selectTeam('${t._id}')">Select Team</button>
+                            <button class="btn-secondary" onclick="showHistoryModal('${t._id}')" style="margin-left: 10px;">📜 History</button>
+                            <button class="btn-danger" onclick="deleteTeam('${t._id}')" style="margin-left: auto;">Delete</button>
+                        </div>
+                    </div>
+                `).join('')}
                 </div>
             `;
         }
@@ -2313,6 +2334,94 @@
         }
 
 
+
+        async function loadRemoteReplay(driveId) {
+            try {
+                log("Fetching replay data...", "action");
+                const res = await fetch(`${API_URL}/drives/${driveId}`);
+                if (!res.ok) throw new Error("Failed to load replay");
+
+                const data = await res.json();
+
+                if (data.frames && data.logs) {
+                    frames = data.frames;
+                    logs = data.logs;
+
+                    // Close history modal if open
+                    document.getElementById('historyModal').classList.remove('active');
+
+                    // Scroll to game
+                    scrollToGame();
+
+                    log(`Loaded Replay: ${data.score} vs ${data.opponent}`, "action");
+                    log("--- REPLAY START ---", "action");
+
+                    currentFrame = 0;
+                    frameTimer = 0;
+                    isPlaying = true;
+                    document.getElementById('btnReplay').disabled = false;
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error loading replay: " + e.message);
+            }
+        }
+
+        async function showHistoryModal(teamId) {
+            const modal = document.getElementById('historyModal');
+            const list = document.getElementById('historyList');
+            const title = document.getElementById('historyTitle');
+
+            list.innerHTML = '<div class="loading-spinner"></div>';
+            modal.classList.add('active');
+
+            try {
+                // Find team name
+                const team = myTeams.find(t => t._id === teamId);
+                title.textContent = `Match History: ${team ? team.name : 'Team'}`;
+
+                const res = await fetch(`${API_URL}/teams/${teamId}/drives`);
+                if (!res.ok) throw new Error("Failed to fetch history");
+
+                const drives = await res.json();
+
+                list.innerHTML = '';
+
+                if (drives.length === 0) {
+                    list.innerHTML = '<div class="history-item" style="color:#888;">No matches played yet.</div>';
+                    return;
+                }
+
+                drives.forEach(drive => {
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+
+                    const date = new Date(drive.created_at).toLocaleString();
+                    const outcomeClass = drive.outcome === 'win' ? 'win' : 'loss';
+                    const score = drive.score || "0-0";
+
+                    item.innerHTML = `
+                        <div class="history-info">
+                            <span class="history-outcome ${outcomeClass}">${drive.outcome ? drive.outcome.toUpperCase() : 'UNK'}</span>
+                            <span class="history-score">${score}</span>
+                            <span class="history-opponent">vs ${drive.opponent || 'AI'}</span>
+                            <span class="history-date">${date}</span>
+                        </div>
+                        <button class="btn-secondary btn-sm" onclick="loadRemoteReplay('${drive._id}')" style="padding: 4px 8px; font-size: 0.8rem;">
+                            📺 Replay
+                        </button>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (e) {
+                console.error(e);
+                list.innerHTML = `<div class="error" style="color:red;">Failed to load history: ${e.message}</div>`;
+            }
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('active');
+        }
 
         requestAnimationFrame(draw);
     </script>

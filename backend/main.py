@@ -8,7 +8,7 @@ import os
 
 from datetime import datetime, timedelta
 from run_nfl_sim import get_simulation_result, run_drive
-from database import db, teams
+from database import db, teams, drives, PyObjectId
 from schemas import NFLTeamModel, CreateTeamRequest
 
 app = FastAPI(title="Super Sim AI API")
@@ -98,13 +98,60 @@ async def start_drive(
         update_data
     )
     
-    # 5. Get updated team data
-    updated_team = await teams.find_one({"_id": ObjectId(request.team_id)})
-    updated_team["_id"] = str(updated_team["_id"])
     
-    # 6. Return result with team data
-    result["team"] = updated_team
+    # 5. Archive the drive (Replay)
+    drive_record = {
+        "team_id": ObjectId(request.team_id),
+        "team_name": team.get("name"),
+        "opponent": "Commanders", # Currently hardcoded in run_drive
+        "outcome": result["outcome"], # win/loss
+        "score": result["score"], # e.g. "24-17"
+        "xp_earned": result["xp_earned"],
+        "strategy_prompt": strategy,
+        "created_at": datetime.utcnow(),
+        "frames": result["frames"],
+        "logs": result["logs"],
+        "stats": result["stats"]
+    }
+    
+    new_drive = await drives.insert_one(drive_record)
+    
+    # Return result with new Level and Drive ID
+    result["new_level"] = new_level
+    result["team"] = await teams.find_one({"_id": ObjectId(request.team_id)})
+    # Convert ObjectIds for JSON
+    result["team"]["_id"] = str(result["team"]["_id"])
+    result["drive_id"] = str(new_drive.inserted_id)
+    
     return result
+
+
+@app.get("/teams/{team_id}/drives")
+async def get_team_drives(team_id: str):
+    """Get history of drives for a team (without frames/logs to save bandwidth)"""
+    cursor = drives.find(
+        {"team_id": ObjectId(team_id)},
+        {"frames": 0, "logs": 0} # Exclude heavy data
+    ).sort("created_at", -1).limit(20)
+    
+    history = []
+    async for drive in cursor:
+        drive["_id"] = str(drive["_id"])
+        drive["team_id"] = str(drive["team_id"])
+        history.append(drive)
+        
+    return history
+
+@app.get("/drives/{drive_id}")
+async def get_drive_replay(drive_id: str):
+    """Get full replay data for a drive"""
+    drive = await drives.find_one({"_id": ObjectId(drive_id)})
+    if not drive:
+        raise HTTPException(status_code=404, detail="Drive not found")
+        
+    drive["_id"] = str(drive["_id"])
+    drive["team_id"] = str(drive["team_id"])
+    return drive
 
 
 # ============= LEGACY GAME ENDPOINT =============

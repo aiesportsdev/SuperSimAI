@@ -210,6 +210,7 @@ def run_drive(team_name="Team", strategy_prompt="Play to win"):
     result = {
         "outcome": outcome,
         "team_name": team_name,
+        "score": f"{game.points_team_1}-{game.points_team_2}",
         "stats": stats,
         "xp_earned": xp_earned,
         "final_yard_line": game.yards,

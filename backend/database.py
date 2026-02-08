@@ -16,6 +16,7 @@ client = AsyncIOMotorClient(MONGO_URI)
 db = client.supersim_ai
 
 teams = db.get_collection("teams")
+drives = db.get_collection("drives")
 
 # Helper for ObjectId
 PyObjectId = Annotated[str, BeforeValidator(str)]
