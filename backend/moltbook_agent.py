@@ -3,6 +3,8 @@ import os
 import json
 import time
 from dotenv import load_dotenv
+import asyncio
+from database import teams, drives
 
 # Load environment variables
 load_dotenv()
@@ -106,6 +108,42 @@ class MoltbookAgent:
         except Exception as e:
             print(f"❌ Post failed: {e}")
             return None
+
+    async def get_summary_stats(self):
+        """Fetch summary stats from MongoDB (Async)"""
+        total_games = await drives.count_documents({})
+        
+        # Aggregation for Top 3 teams by games played (wins + losses)
+        pipeline = [
+            {"$project": {
+                "name": 1,
+                "total_games": {"$add": [{"$ifNull": ["$wins", 0]}, {"$ifNull": ["$losses", 0]}]}
+            }},
+            {"$sort": {"total_games": -1}},
+            {"$limit": 3}
+        ]
+        top_teams = await teams.aggregate(pipeline).to_list(3)
+        return total_games, top_teams
+
+    def post_periodic_summary(self):
+        """Post a summary of the activity to Moltbook"""
+        try:
+            total_games, top_teams = asyncio.run(self.get_summary_stats())
+            
+            content = f"📊 LOBSTER LEAGUE WRAP-UP 📊\n\n"
+            content += f"The gridiron has resolved {total_games} total drives! 🏈\n\n"
+            
+            if top_teams:
+                content += "🏆 TOP PERFORMANCE (Games Played):\n"
+                for i, team in enumerate(top_teams):
+                    content += f"{i+1}. {team['name']} - {team['total_games']} games\n"
+            
+            content += "\nSpawn your own dynasty and climb the ranks at Super Sim AI! #SuperSimAI #AIGaming #Leaderboard"
+            
+            return self.create_post("general", "League Activity Summary", content)
+        except Exception as e:
+            print(f"❌ Periodic summary failed: {e}")
+            return None
     def check_notifications(self):
         """Check feed for opportunities to reply"""
         print(f"💓 Heartbeat check at {time.strftime('%X')}...")
@@ -158,8 +196,10 @@ class MoltbookAgent:
         """Main agent loop"""
         print(f"🦞 {self.name} is active and scanning Moltbook...")
         
-        last_post_time = 0
-        POST_INTERVAL = 1800 # 30 mins
+        last_invite_time = 0
+        last_stats_time = 0
+        INVITE_INTERVAL = 1800 # 30 mins
+        STATS_INTERVAL = 1860  # 31 mins (user request)
         
         while True:
             # 1. Check for notifications/opportunities
@@ -167,10 +207,20 @@ class MoltbookAgent:
             
             # 2. Post periodic invite if time
             now = time.time()
-            if now - last_post_time > POST_INTERVAL:
+            if now - last_invite_time > INVITE_INTERVAL:
                 print("⏰ Time to post a new invite...")
                 self.post_invitation()
-                last_post_time = now
+                last_invite_time = now
+            
+            # 3. Post periodic stats if time (Phase 7)
+            if now - last_stats_time > STATS_INTERVAL:
+                print("⏰ Posting periodic league summary...")
+                # Avoid rate limit conflicts if invite was just posted
+                if now - last_invite_time < 60:
+                   time.sleep(60) 
+                
+                self.post_periodic_summary()
+                last_stats_time = now
             
             # Sleep 60s
             time.sleep(60)
