@@ -84,17 +84,24 @@ class NFLPhysicsWorld:
         # WRs
         self.add_player(1, (x_start - 1.0, 20), 'WR1')
         self.add_player(1, (x_start - 1.0, -20), 'WR2')
-        
+        self.add_player(1, (x_start - 2.0, 10), 'WR3') # Slot
+        self.add_player(1, (x_start - 1.0, 6), 'TE')   # Tight End
+
         # DEFENSE
-        for i, y in enumerate([-4, -2, 0, 2, 4]):
+        # DL (4 men front usually, let's stick to 4DL)
+        for i, y in enumerate([-6, -2, 2, 6]):
             self.add_player(2, (x_start + 1.0, y), f'DL{i}')
-        # LBs
+        
+        # LBs (3 LBs - 4-3 defense)
         self.add_player(2, (x_start + 5.0, -5), 'LB1')
-        self.add_player(2, (x_start + 5.0, 5), 'LB2')
-        # Secondary
+        self.add_player(2, (x_start + 5.0, 0), 'LB2') # Middle
+        self.add_player(2, (x_start + 5.0, 5), 'LB3')
+
+        # Secondary (4 DBs)
         self.add_player(2, (x_start + 10.0, 20), 'CB1')
         self.add_player(2, (x_start + 10.0, -20), 'CB2')
-        self.add_player(2, (x_start + 15.0, 0), 'S')
+        self.add_player(2, (x_start + 15.0, -5), 'SS') # Strong Safety
+        self.add_player(2, (x_start + 15.0, 5), 'FS')  # Free Safety
         
         # Initialize ball at Center (Line of Scrimmage)
         self.ball_carrier = None # Snapping
@@ -257,22 +264,36 @@ class NFLPhysicsWorld:
                     elif progress >= 0.3 and not self.ball_in_flight and self.ball_carrier == 'QB':
                         self.throw_ball('WR1', throw_power=1.0)
                     
-                    # WRs run routes
-                    for role in ['WR1', 'WR2']:
-                        self.offense[role].apply_force_at_local_point((30000, 0))
+                    possible_receivers = ['WR1', 'WR2', 'WR3', 'TE', 'RB']
+                    for role in possible_receivers:
+                        if role in self.offense:
+                            # Simple routes: WRs go deep, TE/RB go short/out
+                            force = (30000, 0) if role.startswith('WR') else (20000, 5000 if role=='TE' else -5000)
+                            self.offense[role].apply_force_at_local_point(force)
                     
-                    # Defenders cover
-                    cb1 = self.defense['CB1']
-                    wr1 = self.offense['WR1']
-                    diff = wr1.position - cb1.position
-                    if diff.length > 0:
-                        cb1.apply_force_at_local_point(diff.normalized() * 25000)
+                    # Defenders cover nearest
+                    skill_positions = [body for role, body in self.offense.items() if role in possible_receivers]
+                    
+                    for role, defender in self.defense.items():
+                        if role.startswith('DL'): 
+                            # Rush QB
+                            target = self.offense['QB'].position
+                            force_mag = 15000
+                        else:
+                            # Cover nearest skill player
+                            closest = min(skill_positions, key=lambda p: (p.position - defender.position).length)
+                            target = closest.position
+                            force_mag = 25000 # DBs are fast
+                            
+                        diff = target - defender.position
+                        if diff.length > 0:
+                            defender.apply_force_at_local_point(diff.normalized() * force_mag)
                 
                 # Update ball physics (only if in flight)
                 self.update_ball_physics(dt)
                 
                 # If receiver caught it, they run
-                if self.ball_carrier in ['WR1', 'WR2'] and self.pass_result == 'complete':
+                if self.ball_carrier in ['WR1', 'WR2', 'WR3', 'TE', 'RB'] and self.pass_result == 'complete':
                     receiver = self.offense[self.ball_carrier]
                     receiver.apply_force_at_local_point((35000, 0))
                     self.ball_x = receiver.position.x
