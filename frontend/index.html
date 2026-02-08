@@ -1520,7 +1520,7 @@
         // --- CAMERA ---
         let cameraX = 0;
         let cameraMode = 'tracking';
-        const ZOOM_TRACKING = 2.5;
+        const ZOOM_TRACKING = 1.8;
         const ZOOM_FULL = 1.0;
 
         function getZoom() {
@@ -1965,7 +1965,14 @@
                 const res = await fetch(`${API_URL}/teams/mine`, {
                     headers: { 'x-wallet-address': connectedWallet }
                 });
-                myTeams = await res.json();
+                const data = await res.json();
+
+                // Normalize IDs
+                myTeams = data.map(t => {
+                    if (!t._id && t.id) t._id = t.id;
+                    return t;
+                });
+
                 renderTeams();
             } catch (e) {
                 console.error('Failed to load teams:', e);
@@ -1987,7 +1994,9 @@
 
             container.innerHTML = `
                 <div class="team-cards-grid">
-                    ${myTeams.map(t => `
+                    ${myTeams.map(t => {
+                const teamId = t.id || t._id;
+                return `
                         <div class="team-card">
                             <div class="team-card-header">
                                 <div class="team-name">${t.name}</div>
@@ -2007,14 +2016,49 @@
                         </div>
                         
                         <div class="team-actions">
-                            <button class="btn-primary" onclick="selectTeam('${t._id}')">Select Team</button>
-                            <button class="btn-secondary" onclick="showHistoryModal('${t._id}')" style="margin-left: 10px;">📜 History</button>
-                            <button class="btn-danger" onclick="deleteTeam('${t._id}')" style="margin-left: auto;">Delete</button>
+                            <button class="btn-primary" onclick="selectTeam('${teamId}')">Play</button>
+                            <button class="btn-secondary" onclick="showHistoryModal('${teamId}')" style="margin-left: 10px;">📜 History</button>
+                            <button class="btn-danger" onclick="deleteTeam('${teamId}')" style="margin-left: auto;">Delete</button>
                         </div>
                     </div>
-                `).join('')}
+                    `;
+            }).join('')}
                 </div>
             `;
+        }
+
+        async function createTeam() {
+            const name = document.getElementById('teamNameInput').value.trim();
+            const coachName = document.getElementById('coachNameInput').value.trim() || 'COACH AI';
+            const strategy = document.getElementById('strategyInput').value.trim() || 'Play aggressive, go for big plays.';
+
+            if (!name) {
+                alert('Please enter a team name!');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/teams`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-wallet-address': connectedWallet
+                    },
+                    body: JSON.stringify({ name, coach_name: coachName, strategy_prompt: strategy })
+                });
+
+                if (res.ok) {
+                    closeCreateTeamModal();
+                    loadMyTeams();
+                    populateTeamDropdown();
+                } else {
+                    const data = await res.json();
+                    alert(data.detail || 'Failed to create team');
+                }
+            } catch (e) {
+                console.error('Create team error:', e);
+                alert('Error creating team');
+            }
         }
 
         async function deleteTeam(teamId) {
@@ -2047,6 +2091,156 @@
 
         function closeCreateTeamModal() {
             document.getElementById('createTeamModal').classList.remove('active');
+        }
+
+        function selectTeam(teamId) {
+            const team = myTeams.find(t => t._id === teamId);
+            if (!team) return;
+
+            // Update dropdown
+            const select = document.getElementById('teamSelect');
+            select.value = teamId;
+            selectedTeamId = teamId;
+
+            // Update Status
+            document.getElementById('gameStatus').textContent = `Ready: ${team.name}`;
+
+            // Show Strategy Editor if hidden or update it
+            const strategyEditor = document.getElementById('strategyEditor');
+            strategyEditor.style.display = 'block';
+
+            // Pre-fill strategy prompt if exists
+            if (team.strategy_prompt) {
+                document.getElementById('driveStrategyInput').value = team.strategy_prompt;
+            }
+
+            // Enable Start
+            document.getElementById('btnStartDrive').disabled = false;
+
+            // Scroll to Game
+            document.getElementById('game').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function showHistoryModal(teamId) {
+            console.log("Opening history for Team ID:", teamId);
+            const modal = document.getElementById('historyModal');
+            const list = document.getElementById('historyList');
+            const title = document.getElementById('historyTitle');
+
+            list.innerHTML = '<div class="loading-spinner"></div>';
+            modal.classList.add('active');
+
+            try {
+                // Find team name
+                const team = myTeams.find(t => t._id === teamId);
+                console.log("Finding team:", teamId, team);
+                title.textContent = `Match History: ${team ? team.name : 'Team'}`;
+
+                const url = `${API_URL}/teams/${teamId}/drives`;
+                console.log("Fetching History from:", url);
+
+                const res = await fetch(url);
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`Failed to fetch history (${res.status}): ${text}`);
+                }
+
+                const drives = await res.json();
+                console.log("Received drives:", drives);
+
+                list.innerHTML = '';
+
+                if (drives.length === 0) {
+                    list.innerHTML = '<div class="history-item" style="color:#888;">No matches played yet.</div>';
+                    return;
+                }
+
+                drives.forEach(drive => {
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+
+                    const date = new Date(drive.created_at).toLocaleString();
+                    const outcomeClass = drive.outcome === 'win' ? 'win' : 'loss';
+                    const score = drive.score || "0-0";
+
+                    item.innerHTML = `
+                        <div class="history-info">
+                            <span class="history-outcome ${outcomeClass}">${drive.outcome ? drive.outcome.toUpperCase() : 'UNK'}</span>
+                            <span class="history-score">${score}</span>
+                            <span class="history-opponent">vs ${drive.opponent || 'AI'}</span>
+                            <span class="history-date">${date}</span>
+                        </div>
+                        <button class="btn-secondary btn-sm" onclick="loadRemoteReplay('${drive._id}')" style="padding: 4px 8px; font-size: 0.8rem;">
+                            📺 Replay
+                        </button>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (e) {
+                console.error("HISTORY ERROR:", e);
+                list.innerHTML = `<div class="error" style="color:red;">Failed to load history: ${e.message}</div>`;
+                alert(`Error loading history: ${e.message}`);
+            }
+        }
+
+        async function deleteTeam(teamId) {
+            if (!confirm('Are you sure you want to delete this team? This cannot be undone.')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/teams/${teamId}`, {
+                    method: 'DELETE',
+                    headers: { 'x-wallet-address': connectedWallet }
+                });
+
+                if (res.ok) {
+                    // Update local state
+                    myTeams = myTeams.filter(t => t._id !== teamId);
+                    renderTeams();
+                    populateTeamDropdown(); // Refresh dropdown too
+                } else {
+                    const data = await res.json();
+                    alert(data.detail || 'Failed to delete team');
+                }
+            } catch (e) {
+                console.error('Delete error:', e);
+                alert('Error deleting team');
+            }
+        }
+
+        function openCreateTeamModal() {
+            document.getElementById('createTeamModal').classList.add('active');
+        }
+
+        function closeCreateTeamModal() {
+            document.getElementById('createTeamModal').classList.remove('active');
+        }
+
+        function selectTeam(teamId) {
+            const team = myTeams.find(t => t._id === teamId);
+            if (!team) return;
+
+            // Update dropdown
+            const select = document.getElementById('teamSelect');
+            select.value = teamId;
+            selectedTeamId = teamId;
+
+            // Update Status
+            document.getElementById('gameStatus').textContent = `Ready: ${team.name}`;
+
+            // Show Strategy Editor if hidden or update it
+            const strategyEditor = document.getElementById('strategyEditor');
+            strategyEditor.style.display = 'block';
+
+            // Pre-fill strategy prompt if exists
+            if (team.strategy_prompt) {
+                document.getElementById('driveStrategyInput').value = team.strategy_prompt;
+            }
+
+            // Enable Start
+            document.getElementById('btnStartDrive').disabled = false;
+
+            // Scroll to Game
+            document.getElementById('game').scrollIntoView({ behavior: 'smooth' });
         }
 
         async function createTeam() {
