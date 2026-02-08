@@ -1568,6 +1568,34 @@
                         }
                     }
                 }
+            } else {
+                // IDLE STATE: Draw Default Formation at Line of Scrimmage (25 yard line)
+                // 25 yard line = -0.5 in World Coordinates
+                const losX = -0.5;
+
+                // Offense (Blue)
+                // QB
+                drawSprite(losX - 0.15, 0, ANIM_ROWS.RIGHT);
+                // RB
+                drawSprite(losX - 0.3, 0, ANIM_ROWS.RIGHT);
+                // OL (5)
+                [-0.08, -0.04, 0, 0.04, 0.08].forEach(y => drawSprite(losX - 0.02, y, ANIM_ROWS.RIGHT));
+                // WRs
+                drawSprite(losX - 0.02, 0.4, ANIM_ROWS.RIGHT);
+                drawSprite(losX - 0.02, -0.4, ANIM_ROWS.RIGHT);
+
+                // Defense (Red)
+                // DL
+                [-0.08, -0.04, 0, 0.04, 0.08].forEach(y => drawSprite(losX + 0.02, y, ANIM_ROWS.LEFT));
+                // LBs
+                [-0.1, 0, 0.1].forEach(y => drawSprite(losX + 0.1, y, ANIM_ROWS.LEFT));
+                // DBs
+                drawSprite(losX + 0.2, 0.4, ANIM_ROWS.LEFT);
+                drawSprite(losX + 0.2, -0.4, ANIM_ROWS.LEFT);
+                drawSprite(losX + 0.3, 0, ANIM_ROWS.LEFT);
+
+                // Ball at Center (LOS)
+                drawBall(losX, 0, 0.1);
             }
             requestAnimationFrame(draw);
         }
