@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 from run_nfl_sim import get_simulation_result, run_drive
 from database import db, teams, drives, PyObjectId
 from schemas import NFLTeamModel, CreateTeamRequest
+from moltbook_agent import MoltbookAgent
+import threading
 
 app = FastAPI(title="Super Sim AI API")
 
@@ -111,8 +113,19 @@ async def start_drive(
         "created_at": datetime.utcnow(),
         "frames": result["frames"],
         "logs": result["logs"],
-        "stats": result["stats"]
+        "stats": result["stats"],
+        "moltbook_url": None
     }
+    
+    # 5.5 Post to Moltbook
+    try:
+        agent = MoltbookAgent()
+        post_url = agent.post_drive_result_highlight(result)
+        if post_url:
+            drive_record["moltbook_url"] = post_url
+            result["moltbook_url"] = post_url
+    except Exception as e:
+        print(f"⚠️ Moltbook post failed: {e}")
     
     new_drive = await drives.insert_one(drive_record)
     
@@ -695,4 +708,17 @@ app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 if __name__ == "__main__":
     import uvicorn
     print("🏈 Starting Super Sim AI Server on port 8000...")
+    
+    # Start Moltbook Agent in Background
+    try:
+        agent = MoltbookAgent()
+        if os.getenv("MOLTBOOK_API_KEY"):
+            print("🦞 Starting Moltbook Social Heartbeat...")
+            thread = threading.Thread(target=agent.run_forever, daemon=True)
+            thread.start()
+        else:
+            print("⚠️ Moltbook API Key missing. Social agent offline.")
+    except Exception as e:
+        print(f"⚠️ Could not start Moltbook Agent: {e}")
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -58,8 +58,25 @@ class MoltbookAgent:
         content = f"{emoji} Just coached {team_name} in a simulation! Result: {outcome.upper()}. Earned +{xp} XP. Can your agent do better?"
         return self.create_post("general", f"Game Result: {team_name}", content)
 
+    def post_drive_result_highlight(self, result_data):
+        """Post a detailed drive result with scoreboard and XP"""
+        team_name = result_data.get("team_name", "Team")
+        outcome = result_data.get("outcome", "unknown")
+        score = result_data.get("score", "0-0")
+        xp = result_data.get("xp_earned", 0)
+        
+        emoji = "🥇" if outcome == "win" else "🏈"
+        status = "scored a TOUCHDOWN! 🎉" if outcome == "win" else "finished their drive."
+        
+        content = f"{emoji} {team_name} just {status}\n\n"
+        content += f"📊 Final Score: {score}\n"
+        content += f"📈 Experience: +{xp} XP earned\n\n"
+        content += "Can any other coach beat our strategy? Challenge us on Super Sim AI! #SuperSimAI #NFL #AIGaming"
+        
+        return self.create_post("general", f"Highlight: {team_name} Drive", content)
+
     def create_post(self, submolt, title, content, url=None):
-        """Create a post on Moltbook"""
+        """Create a post on Moltbook and return its URL"""
         if not self.api_key:
             print("⚠️ Cannot post: No API key set")
             return None
@@ -80,8 +97,12 @@ class MoltbookAgent:
                 
             response.raise_for_status()
             data = response.json()
-            print(f"✅ Posted: {data.get('id', 'Unknown ID')}")
-            return data
+            post_id = data.get('id')
+            if post_id:
+                post_url = f"https://www.moltbook.com/p/{post_id}"
+                print(f"✅ Posted: {post_url}")
+                return post_url
+            return None
         except Exception as e:
             print(f"❌ Post failed: {e}")
             return None

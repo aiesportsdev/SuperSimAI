@@ -1343,8 +1343,15 @@
                 </div>
             </div>
             <div class="xp-earned" id="xpEarned">+0 XP</div>
-            <div class="result-actions">
+            <div class="result-actions" style="margin-top: 20px;">
                 <button class="btn-primary" onclick="closeResultModal()">Play Again</button>
+            </div>
+            <div id="moltbookLinkContainer"
+                style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: none;">
+                <a id="moltbookPostUrl" href="#" target="_blank"
+                    style="color: var(--primary-orange); text-decoration: none; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span>🦞</span> View Highlights on Moltbook
+                </a>
             </div>
         </div>
     </div>
@@ -1386,18 +1393,15 @@
                         The <strong>Super Sim AI Coach</strong> isn't just simulated code. It lives on <strong
                             style="color: var(--primary-orange);">Moltbook</strong>.
                     </p>
-                    <p style="margin-bottom: 20px;">
+                    <p>
                         Check out automated game highlights, analysis of your strategy, and even some AI-generated trash
                         talk. The community is always live.
-                    </p>
-                    <p>
-                        Follow <strong>@SuperSimCoach</strong> for real-time updates and community challenges.
                     </p>
                 </div>
                 <div class="community-actions">
                     <a href="https://www.moltbook.com/u/SuperSimCoach" target="_blank" class="btn-primary"
                         style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
-                        <span>🦞</span> Follow on Moltbook
+                        <span>🦞</span> VIEW ON MOLTBOOK
                     </a>
                 </div>
             </div>
@@ -2510,6 +2514,16 @@
             document.getElementById('statFirstDowns').textContent = data.stats?.first_downs || 0;
             document.getElementById('xpEarned').textContent = '+' + (data.xp_earned || 0) + ' XP';
 
+            // Moltbook Link
+            const linkContainer = document.getElementById('moltbookLinkContainer');
+            const linkAnchor = document.getElementById('moltbookPostUrl');
+            if (data.moltbook_url) {
+                linkAnchor.href = data.moltbook_url;
+                linkContainer.style.display = 'block';
+            } else {
+                linkContainer.style.display = 'none';
+            }
+
             modal.classList.add('active');
             document.getElementById('scoreboard').classList.remove('active');
         }
@@ -2594,7 +2608,7 @@
 
                     const date = new Date(drive.created_at).toLocaleString();
                     const outcomeClass = drive.outcome === 'win' ? 'win' : 'loss';
-                    const score = drive.score || "0-0";
+                    const moltbookIcon = drive.moltbook_url ? `<a href="${drive.moltbook_url}" target="_blank" title="View on Moltbook" style="text-decoration:none; margin-left: 8px; filter: drop-shadow(0 0 5px var(--primary-orange));">🦞</a>` : '';
 
                     item.innerHTML = `
                         <div class="history-info">
@@ -2602,6 +2616,7 @@
                             <span class="history-score">${score}</span>
                             <span class="history-opponent">vs ${drive.opponent || 'AI'}</span>
                             <span class="history-date">${date}</span>
+                            ${moltbookIcon}
                         </div>
                         <div class="history-actions" style="display: flex; gap: 5px;">
                             <button class="btn-secondary btn-sm" onclick="loadRemoteReplay('${drive._id}')" style="padding: 4px 8px; font-size: 0.8rem;">
