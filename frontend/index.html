@@ -1286,7 +1286,6 @@
 
             <div class="canvas-wrapper">
                 <canvas id="nflCanvas" width="800" height="400"></canvas>
-                <div class="zoom-label" id="zoomLabel">CAMERA: TRACKING</div>
 
                 <!-- Scoreboard Overlay -->
                 <div class="scoreboard" id="scoreboard">
@@ -1313,7 +1312,6 @@
                 </div>
                 <div class="control-buttons">
                     <button id="btnReplay" class="game-btn" onclick="replayGame()" disabled>↻ REPLAY</button>
-                    <button id="btnCamera" class="game-btn" onclick="toggleCamera()">📷 TOGGLE CAM</button>
                 </div>
             </div>
 
@@ -1519,40 +1517,38 @@
 
         // --- CAMERA ---
         let cameraX = 0;
-        let cameraMode = 'tracking';
-        const ZOOM_TRACKING = 1.8;
-        const ZOOM_FULL = 1.0;
+        let cameraMode = 'full';
 
         function getZoom() {
-            return cameraMode === 'tracking' ? ZOOM_TRACKING : ZOOM_FULL;
-        }
-
-        function toggleCamera() {
-            cameraMode = cameraMode === 'tracking' ? 'full' : 'tracking';
-            document.getElementById('zoomLabel').textContent =
-                cameraMode === 'tracking' ? 'CAMERA: TRACKING' : 'CAMERA: FULL PITCH';
-            if (cameraMode === 'full') {
-                cameraX = 0;
-            }
+            return 1.0;
         }
 
         function scrollToGame() {
             document.getElementById('game').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function draw() {
-            const ZOOM = getZoom();
+        async function downloadDriveJson(driveId) {
+            try {
+                const res = await fetch(`${API_URL}/drives/${driveId}`);
+                if (!res.ok) throw new Error("Failed to fetch drive data");
+                const data = await res.json();
 
-            if (cameraMode === 'tracking' && frames.length > 0 && currentFrame < frames.length) {
-                const ball = frames[currentFrame].ball;
-                cameraX += (ball[0] - cameraX) * 0.08;
-                const edge = 1.0 - (1.0 / ZOOM);
-                if (cameraX > edge) cameraX = edge;
-                if (cameraX < -edge) cameraX = -edge;
-            } else if (cameraMode === 'full') {
-                cameraX = 0;
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `drive_${driveId}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                alert("Download failed: " + e.message);
             }
+        }
 
+        function draw() {
+            cameraX = 0; // Fixed Full Pitch View
             drawGridiron();
 
             if (frames.length > 0 && currentFrame < frames.length) {
@@ -1575,6 +1571,11 @@
                 drawBall(b[0], b[1], b[2]);
 
                 if (isPlaying) {
+                    // Update scoreboard if state is attached to frame
+                    if (frame.game_state) {
+                        updateScoreboard(frame.game_state);
+                    }
+
                     frameTimer++;
                     if (frameTimer >= FRAME_DELAY) {
                         currentFrame++;
@@ -1836,9 +1837,6 @@
             log("--- REPLAYING ---", "action");
             currentFrame = 0;
             frameTimer = 0;
-            if (cameraMode === 'tracking' && frames.length > 0) {
-                cameraX = frames[0].ball[0];
-            }
             isPlaying = true;
         }
 
@@ -2538,6 +2536,13 @@
                     frames = data.frames;
                     logs = data.logs;
 
+                    // Reset UI for replay
+                    document.getElementById('gameLog').innerHTML = "";
+                    document.getElementById('scoreboard').classList.add('active');
+                    if (frames.length > 0 && frames[0].game_state) {
+                        updateScoreboard(frames[0].game_state);
+                    }
+
                     // Close history modal if open
                     document.getElementById('historyModal').classList.remove('active');
 
@@ -2598,9 +2603,14 @@
                             <span class="history-opponent">vs ${drive.opponent || 'AI'}</span>
                             <span class="history-date">${date}</span>
                         </div>
-                        <button class="btn-secondary btn-sm" onclick="loadRemoteReplay('${drive._id}')" style="padding: 4px 8px; font-size: 0.8rem;">
-                            📺 Replay
-                        </button>
+                        <div class="history-actions" style="display: flex; gap: 5px;">
+                            <button class="btn-secondary btn-sm" onclick="loadRemoteReplay('${drive._id}')" style="padding: 4px 8px; font-size: 0.8rem;">
+                                📺 Replay
+                            </button>
+                            <button class="btn-secondary btn-sm" onclick="downloadDriveJson('${drive._id}')" style="padding: 4px 8px; font-size: 0.8rem; background: #333;">
+                                📥 JSON
+                            </button>
+                        </div>
                     `;
                     list.appendChild(item);
                 });
