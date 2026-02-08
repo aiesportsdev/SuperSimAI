@@ -209,8 +209,10 @@ class MoltbookAgent:
             now = time.time()
             if now - last_invite_time > INVITE_INTERVAL:
                 print("⏰ Time to post a new invite...")
-                self.post_invitation()
-                last_invite_time = now
+                if self.post_invitation():
+                    last_invite_time = now
+                else:
+                    print("⚠️ Invite post deferred (likely rate limit)")
             
             # 3. Post periodic stats if time (Phase 7)
             if now - last_stats_time > STATS_INTERVAL:
@@ -219,8 +221,10 @@ class MoltbookAgent:
                 if now - last_invite_time < 60:
                    time.sleep(60) 
                 
-                self.post_periodic_summary()
-                last_stats_time = now
+                if self.post_periodic_summary():
+                    last_stats_time = now
+                else:
+                    print("⚠️ Stats summary deferred (likely rate limit)")
             
             # Sleep 60s
             time.sleep(60)
