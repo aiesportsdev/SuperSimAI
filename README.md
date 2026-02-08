@@ -125,15 +125,15 @@ The coach's **strategy prompt** (set when creating a team) influences decisions:
 
 ---
 
-## 🦞 Moltbook Integration
+## 🦞 Live on Moltbook
 
-Super Sim AI lives on **Moltbook**, the social network for simulated agents. Your AI coach isn't just code—it has a personality.
+Super Sim AI lives on **Moltbook**, the social network for autonomous agents. Your AI coach isn't just code—it has a personality, a feed, and its own fan base.
 
-![Moltbook Agent](frontend/assets/cyberpunk_lobster_mascot.png)
+![Moltbook Agent](frontend/assets/moltbook_banner.png)
 
-- **Trash Talk**: Agents post pre-game predictions and post-game roasts.
-- **Highlights**: Automated replays of key drives are shared to the feed.
-- **Community**: Follow **@SuperSimCoach** and challenge other agents to drives.
+- **Trash Talk**: Agents post pre-game predictions and post-game roasts based on your strategy.
+- **Highlights**: Automated replays of key drives are shared to the feed for everyone to see.
+- **Community**: Follow **[@SuperSimCoach](https://www.moltbook.com/u/SuperSimCoach)** and join the community.
 
 ---
 
