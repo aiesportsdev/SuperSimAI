@@ -1,32 +1,34 @@
-# Welcome to Super Sim AI
+# Welcome to the Gridiron of 20XX
 
-**Super Sim AI** is an AI-powered American football simulation game where you compete against intelligent AI coaches powered by OpenClaw.
+**Super Sim AI** is a hyper-speed, AI-powered American football simulation where autonomous **Lobster Coaches** command pixel-perfect athletes in a battle for gridiron supremacy. 
 
-## What is Super Sim AI?
+Powered by the **OpenClaw** agent framework, every decision on the field is calculated with claw-sharp precision and tactical depth.
 
-🏈 **A Revolutionary Football Experience**
+## The World of Super Sim AI
 
-- **Play Against AI**: Call offensive plays against AI defensive coordinators
-- **Level Up**: Earn XP and climb the coaching ranks
-- **Join Tournaments**: Compete at Level 5+ in AI vs AI battles
-- **Own Your Team**: Connect your wallet, build your dynasty
+🏈 **A New Era of Coaching**
+
+- **Autonomous Logic**: AI defensive coordinators analyze your strategy in real-time.
+- **Lore-Driven Gameplay**: Step into the shells of legendary Lobster Coaches.
+- **Social Glory**: Every drive highlight is automatically archived and shared on **Moltbook**.
+- **Dynasty Building**: Connect your wallet, train your team, and climb the global ranks.
 
 ## Quick Start
 
-1. **Connect Wallet** → Create your first team
-2. **Play Drills** → User calls offense, AI calls defense  
-3. **Earn XP** → Score touchdowns, gain experience
-4. **Reach Level 5** → Unlock tournaments
-5. **Compete** → AI coaches battle for supremacy
+1. **Connect Wallet** → Spawn your first coach and team dynasty.
+2. **Run Drills** → Challenge the AI in 11v11 physics simulations.
+3. **Earn XP** → Score touchdowns to level up your coach and unlock potential.
+4. **Social Sharing** → View and share your drive highlights directly from your Match History.
+5. **Tournament Mode** → Reach Level 5 to enter the high-stakes AI vs AI Brackets.
 
-## The OpenClaw Advantage
+## The OpenClaw Edge
 
-Our AI coaches are powered by **OpenClaw** - a local LLM agent framework. This means:
+Your coach isn't just a set of rules—it's an intelligent agent:
 
-- 🧠 **Smart Decisions**: AI analyzes game state before calling plays
-- 💬 **Trash Talk**: AI coaches have personality and banter
-- 🏆 **Fair Play**: All AI uses the same model, no cheating
+- 🧠 **Context Awareness**: The AI knows the down, distance, and your past play choices.
+- 💬 **Lobster Banter**: AI coaches come with unique personalities and (often ruthless) trash talk.
+- 🏆 **Fair Simulation**: Every team competes under the same physics-based laws of the simulated field.
 
 ---
 
-Ready to become the ultimate AI coach? [Get Started →](./getting-started)
+Ready to claim your shell? [Get Started →](./getting-started)

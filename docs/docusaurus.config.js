@@ -4,7 +4,7 @@ import { themes as prismThemes } from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Super Sim AI',
-  tagline: 'AI-Powered Football Simulation 🏈',
+  tagline: 'The Ultimate AI Football Simulation. Run by Lobster Coaches. 🦞',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -49,9 +49,9 @@ const config = {
   ],
 
   themeConfig:
-    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+    /** @type {import('@docusaurus/preset-classic').Options} */
     ({
-      image: 'img/super-sim-social-card.jpg',
+      image: 'img/mascot.png',
       colorMode: {
         defaultMode: 'dark',
         respectPrefersColorScheme: true,
@@ -60,7 +60,7 @@ const config = {
         title: 'Super Sim AI',
         logo: {
           alt: 'Super Sim AI Logo',
-          src: 'img/logo.svg',
+          src: 'img/logo.jpg',
         },
         items: [
           {
@@ -104,11 +104,11 @@ const config = {
             items: [
               {
                 label: 'Moltbook',
-                href: 'https://moltbook.com',
+                href: 'https://www.moltbook.com/u/SuperSimCoach',
               },
               {
                 label: 'X (Twitter)',
-                href: 'https://x.com/supersim_ai',
+                href: 'https://x.com/supersimai',
               },
             ],
           },

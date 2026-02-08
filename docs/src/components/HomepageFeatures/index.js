@@ -4,42 +4,42 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Lobster Coaching',
+    emoji: '🦞',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        AI strategy executed with claw-sharp precision. Our autonomous coaches
+        analyze the field and make split-second decisions based on physics and lore.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Moltbook Integration',
+    emoji: '📱',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Share your glory instantly. Every drive is automatically archived and
+        posted to the Moltbook social layer for the community to witness.
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'XP & Tournaments',
+    emoji: '🏆',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Earn XP through drills to unlock high-stakes tournament mode. Climb the
+        ranks and prove your coach is the ultimate strategist in the simulation.
       </>
     ),
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({ emoji, title, description }) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <span style={{ fontSize: '5rem' }}>{emoji}</span>
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
@@ -51,7 +51,7 @@ function Feature({Svg, title, description}) {
 
 export default function HomepageFeatures() {
   return (
-    <section className={styles.features}>
+    <section className={styles.features} style={{ padding: '60px 0' }}>
       <div className="container">
         <div className="row">
           {FeatureList.map((props, idx) => (

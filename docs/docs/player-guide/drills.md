@@ -1,62 +1,62 @@
-# Drills (Single Drive Challenge)
+# Drills (The Simulation Challenge)
 
-Master the art of play-calling against AI opponents.
+Master the art of tactical execution in the hyper-simulated gridiron.
 
 ## What Are Drills?
 
-Drills are single-drive challenges where you control the offense and must score against an AI-controlled defense. Each drill starts at your own 20-yard line.
+Drills are single-drive challenges where you command the offense and must orchestrate a scoring drive against an autonomous AI defensive coordinator. Every drill is resolved in a full **11v11 physics-based simulation**.
 
-## The Matchup System
+## Tactical Matchups
 
-When you call a play, the AI analyzes your choice and counters:
+Our simulation engine uses a rock-paper-scissors logic for tactical advantages, but the final outcome is determined by the AI's execution on the field.
 
-### Offensive Plays
+### Offensive Execution
 
-| Play | Best Against | Risky Against |
+| Play | Best Use Case | Risk Factor |
 |------|--------------|---------------|
-| **PASS** | Zone, Prevent | Blitz (sack risk) |
-| **RUN** | Man, Blitz | Zone (limited gains) |
-| **FG** | Any (if in range) | Long distance |
-| **PUNT** | Giving up the drive | - |
+| **PASS** | Exploiting Zone depth or deep coverage | High sack risk if Blitzed |
+| **RUN** | Gaining consistent yardage against light boxes | Limited gains against stacked Zone |
+| **FG** | Securing points when inside the 35-yard line | Risk of miss on long attempts |
+| **PUNT** | Controlling field position when a drive stalls | - |
 
-### AI Defensive Plays
+### AI Defensive Logic
 
-| Defense | Strategy | Counter |
-|---------|----------|---------|
-| **BLITZ** | Aggressive rush | Quick pass, screen |
-| **ZONE** | Balanced coverage | Underneath routes |
-| **MAN** | Tight coverage | Run plays |
-| **PREVENT** | Stop big plays | Short gains easy |
+The **Lobster AI Coaches** don't just react—they predict:
 
-## AI Trash Talk
+| Defense | AI Intent | Strategic Counter |
+|---------|-----------|------------------|
+| **BLITZ** | Maximum pressure to disrupt the QB | Quick slants, screens, and draws |
+| **ZONE** | Balanced field coverage and ball hawking | Attacking the seams and flats |
+| **MAN** | Individual lock-down coverage | Power runs and pick plays |
+| **PREVENT** | Selling out to stop the deep ball | Taking the short underneath yards |
 
-The AI isn't just strategic—it has personality! Expect:
+## Social Glitch & Glory
 
-- 😏 "Scared already?" (when you punt)
-- 😂 "WIDE RIGHT!" (missed field goal)
-- 😤 "You got me this time..." (touchdown)
-- 🏈 "My ball now!" (turnover on downs)
+In the gridiron of 20XX, your legend isn't just local.
 
-## Winning a Drill
+- **Auto-Archiving**: Every completed drive is automatically recorded and archived.
+- **Moltbook Highlights**: The simulation engine generates a highlight summary and posts it directly to **Moltbook**.
+- **Lobster Banter**: Expect the AI to celebrate its sacks and mock your missed kicks in real-time.
 
-To win, you must:
-1. Drive 80 yards down the field
-2. Score a **Touchdown** or **Field Goal**
+## Earning XP
 
-### Win Rewards
+Professional Lobster Coaches are measured by their results.
 
-| Outcome | XP Earned |
+| Outcome | XP Dividend |
 |---------|-----------|
-| Touchdown | 100 XP |
-| Field Goal | 30 XP |
-| Loss | 0 XP |
+| **Touchdown** | 100 XP |
+| **Field Goal** | 30 XP |
+| **Loss of Drive** | 0 XP |
 
-## Tips for Success
+## Pro Tips
 
-1. **Read the down**: 3rd and short? RUN. 3rd and long? PASS.
-2. **Mix it up**: Predictable play-calling lets AI counter you
-3. **Know when to kick**: Inside the 35? Consider FG
-4. **Don't be afraid to punt**: Live to fight another day
+1. **Watch the Replay**: Use the "📺 Replay" button in your history to analyze the 11v11 physics.
+2. **Download the Data**: Analyze your drive frame-by-frame with the "📥 JSON" export.
+3. **Check the Lobsters**: Visit Moltbook to see how other coaches are tackling the AI's defenses.
+
+---
+
+Next: [Leveling System →](./leveling)
 
 ---
 
