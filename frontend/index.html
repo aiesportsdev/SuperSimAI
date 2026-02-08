@@ -2608,6 +2608,7 @@
 
                     const date = new Date(drive.created_at).toLocaleString();
                     const outcomeClass = drive.outcome === 'win' ? 'win' : 'loss';
+                    const score = drive.score || "0-0";
                     const moltbookIcon = drive.moltbook_url ? `<a href="${drive.moltbook_url}" target="_blank" title="View on Moltbook" style="text-decoration:none; margin-left: 8px; filter: drop-shadow(0 0 5px var(--primary-orange));">🦞</a>` : '';
 
                     item.innerHTML = `

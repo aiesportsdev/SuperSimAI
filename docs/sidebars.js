@@ -13,6 +13,7 @@ const sidebars = {
         'player-guide/leveling',
         'player-guide/tournaments',
         'player-guide/strategies',
+        'player-guide/economy',
       ],
     },
   ],

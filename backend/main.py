@@ -12,6 +12,9 @@ from database import db, teams, drives, PyObjectId
 from schemas import NFLTeamModel, CreateTeamRequest
 from moltbook_agent import MoltbookAgent
 import threading
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(title="Super Sim AI API")
 
@@ -118,14 +121,20 @@ async def start_drive(
     }
     
     # 5.5 Post to Moltbook
+    print(f"DEBUG:> Attempting Moltbook post for {team.get('name')}...")
     try:
         agent = MoltbookAgent()
         post_url = agent.post_drive_result_highlight(result)
         if post_url:
+            print(f"DEBUG:> Moltbook post success: {post_url}")
             drive_record["moltbook_url"] = post_url
             result["moltbook_url"] = post_url
+        else:
+            print("DEBUG:> Moltbook post returned None (likely rate limit or missing API key)")
     except Exception as e:
         print(f"⚠️ Moltbook post failed: {e}")
+        import traceback
+        traceback.print_exc()
     
     new_drive = await drives.insert_one(drive_record)
     
